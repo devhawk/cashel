@@ -1,0 +1,72 @@
+"General"
+{
+"ProjectIdGuid" = "{59211AE5-5C67-4AD4-9A51-DCFD95117140}"
+}
+"Configurations"
+{
+    "Debug|Win32"
+    {
+    "ProjectType" = "DLL"
+    "OptLevel" = "Off"
+    "StrongNamingLevel" = "None"
+    "OutputPath" = ""
+    "SearchPath" = ""
+    "StrongNameFile" = ""
+    "OutputBase" = ""
+    "CustomCommandLine" = ""
+    "CustomCompiler" = ""
+    "DebugCheck" = "TRUE"
+    "CustomCompilationCheck" = "FALSE"
+    "DebugStartMode" = "0"
+    "StartApp" = ""
+    "StartAppPath" = ""
+    "CustomStartupArguments" = ""
+    }
+    "Release|Win32"
+    {
+    "ProjectType" = "EXE"
+    "OptLevel" = "3"
+    "StrongNamingLevel" = "None"
+    "OutputPath" = ""
+    "SearchPath" = ""
+    "StrongNameFile" = ""
+    "OutputBase" = ""
+    "CustomCommandLine" = ""
+    "CustomCompiler" = ""
+    "DebugCheck" = "FALSE"
+    "CustomCompilationCheck" = "FALSE"
+    "DebugStartMode" = "0"
+    "StartApp" = ""
+    "StartAppPath" = ""
+    "CustomStartupArguments" = ""
+    }
+}
+"Files"
+{
+    "parser.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+    "primitives.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+    "peg.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+    "peg2.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ometa.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+}
+"ProjStartupServices"
+{
+}
+"Globals"
+{
+}

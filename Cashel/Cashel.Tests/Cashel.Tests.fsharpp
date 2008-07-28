@@ -1,0 +1,64 @@
+"General"
+{
+"ProjectIdGuid" = "{B07E7515-ABC3-4491-8EC0-BA4C8E6A6C3C}"
+}
+"Configurations"
+{
+    "Debug|Win32"
+    {
+    "ProjectType" = "DLL"
+    "OptLevel" = "Off"
+    "StrongNamingLevel" = "None"
+    "OutputPath" = ""
+    "SearchPath" = "-R \"..\\..\\External\\xunit.dll\"  -R \"..\\..\\External\\FsTest.dll\" -R \"D:\\HPierson.Files\\Projects\\Quinault\\Cashel\\Cashel\\cashel.dll\""
+    "StrongNameFile" = ""
+    "OutputBase" = ""
+    "CustomCommandLine" = ""
+    "CustomCompiler" = ""
+    "DebugCheck" = "TRUE"
+    "CustomCompilationCheck" = "FALSE"
+    "DebugStartMode" = "0"
+    "StartApp" = "D:\\HPierson.Files\\Projects\\Quinault\\External\\xunit.console.exe"
+    "StartAppPath" = ""
+    "CustomStartupArguments" = "cashel.tests.dll /wait "
+    }
+    "Release|Win32"
+    {
+    "ProjectType" = "DLL"
+    "OptLevel" = "3"
+    "StrongNamingLevel" = "None"
+    "OutputPath" = ""
+    "SearchPath" = "-I \"..\\..\\External\" -R \"xunit.dll\" -R \"FsUtil.dll\""
+    "StrongNameFile" = ""
+    "OutputBase" = ""
+    "CustomCommandLine" = ""
+    "CustomCompiler" = ""
+    "DebugCheck" = "FALSE"
+    "CustomCompilationCheck" = "FALSE"
+    "DebugStartMode" = "0"
+    "StartApp" = ""
+    "StartAppPath" = ""
+    "CustomStartupArguments" = ""
+    }
+}
+"Files"
+{
+    "parser.tests.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+    "primitives.test.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+    "peg.test.fs"
+    {
+    "ProjRelPath" = "T"
+    }
+}
+"ProjStartupServices"
+{
+}
+"Globals"
+{
+}

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{94D665CA-D915-4DE1-AA53-913450A1AE2D}") = "Cashel", "Cashel\Cashel.fsharpp", "{59211AE5-5C67-4AD4-9A51-DCFD95117140}"
+EndProject
+Project("{94D665CA-D915-4DE1-AA53-913450A1AE2D}") = "Cashel.Tests", "Cashel.Tests\Cashel.Tests.fsharpp", "{B07E7515-ABC3-4491-8EC0-BA4C8E6A6C3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59211AE5-5C67-4AD4-9A51-DCFD95117140}.Debug|Win32.ActiveCfg = Debug|Win32
+		{59211AE5-5C67-4AD4-9A51-DCFD95117140}.Debug|Win32.Build.0 = Debug|Win32
+		{59211AE5-5C67-4AD4-9A51-DCFD95117140}.Release|Win32.ActiveCfg = Release|Win32
+		{59211AE5-5C67-4AD4-9A51-DCFD95117140}.Release|Win32.Build.0 = Release|Win32
+		{B07E7515-ABC3-4491-8EC0-BA4C8E6A6C3C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B07E7515-ABC3-4491-8EC0-BA4C8E6A6C3C}.Debug|Win32.Build.0 = Debug|Win32
+		{B07E7515-ABC3-4491-8EC0-BA4C8E6A6C3C}.Release|Win32.ActiveCfg = Release|Win32
+		{B07E7515-ABC3-4491-8EC0-BA4C8E6A6C3C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
