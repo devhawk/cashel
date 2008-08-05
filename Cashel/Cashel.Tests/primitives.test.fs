@@ -135,3 +135,23 @@ let test_ignore_right () =
 [<Fact>]
 let test_ignore_right_fails () =
     ((item_equal 't') >>. (item_equal 's')) !!"test" |> should equal None
+
+[<Fact>]
+let test_parse_return_value () =
+    ((item_equal 't') >>$ "hello") !!"test" |> should equal (Some("hello", !!"est"))
+
+[<Fact>]
+let test_parse_return_value_fails () =
+    ((item_equal 'q') >>$ "hello") !!"test" |> should equal None
+    
+[<Fact>]
+let test_repeat_until () =
+    (repeat_until item (item_equal 's')) !!"test" |> should equal (Some(!!"te", !!"t"))
+    
+[<Fact>]
+let test_repeat_until_fail_1 () =
+    (repeat_until item (item_equal 'q')) !!"test" |> should equal None
+
+[<Fact>]
+let test_repeat_until_fail_2 () =
+    (repeat_until (item_equal 'q') (item_equal 's')) !!"test" |> should equal None
