@@ -34,11 +34,11 @@ let test_listify_with_item () =
 [<Fact>]
 let test_satisy_simple_predicate () =
     let exp = Some('t', !!"est")
-    satisfy (fun x -> x = 't') !!"test" |> should equal exp
+    satisfy item (fun x -> x = 't') !!"test" |> should equal exp
 
 [<Fact>]
 let test_satisy_failure_predicate () =
-    satisfy (fun x -> x = 'e') !!"test" |> should equal None
+    satisfy item (fun x -> x = 'e') !!"test" |> should equal None
     
 [<Fact>]
 let test_any_of_success_predicate () =

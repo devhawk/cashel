@@ -296,27 +296,24 @@ let Identifier =
 //Had to name this method pPrimary to avoid conflict with Primary discriminated union
 let rec pPrimary =
     parse {
-        let! id = Identifier
-        do! !~ LEFTARROW
-        return Primary.Identifier(id) }
-    +++   
-    parse {
-        do! OPEN |> ignore
-        let! exp = Expression
-        do! CLOSE |> ignore
-        return Primary.Expression(exp) }        
-    +++    
-    parse {
-        let! lit = Literal
-        return Primary.Literal(lit) }        
-    +++    
-    parse {
-        let! cls = Class
-        return Primary.Class(cls) }
-    +++    
-    parse {
-        do! DOT |> ignore
-        return Dot }
+        return! parse {
+            let! id = Identifier
+            do! !~ LEFTARROW
+            return Primary.Identifier(id) }
+        return! parse {
+            do! OPEN |> ignore
+            let! exp = Expression
+            do! CLOSE |> ignore
+            return Primary.Expression(exp) }        
+        return! parse {
+            let! lit = Literal
+            return Primary.Literal(lit) }        
+        return! parse {
+            let! cls = Class
+            return Primary.Class(cls) }
+        return! parse {
+            do! DOT |> ignore
+            return Dot } }
 
 
 ///SequenceItem <- (AND / NOT)? Primary (QUESTION / STAR / PLUS)?

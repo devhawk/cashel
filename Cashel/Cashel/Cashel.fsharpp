@@ -55,14 +55,6 @@
     {
     "ProjRelPath" = "T"
     }
-    "peg2.fs"
-    {
-    "ProjRelPath" = "T"
-    }
-    "ometa.fs"
-    {
-    "ProjRelPath" = "T"
-    }
 }
 "ProjStartupServices"
 {

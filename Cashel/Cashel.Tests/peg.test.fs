@@ -355,6 +355,7 @@ EndOfFile <- !."
     defs |> List.length |> should equal 29
     cl |> should equal []
 
+(*
 [<Fact>]  
 let test_PEG2_grammar () =
     let peg_grammar = !! @"
@@ -402,4 +403,4 @@ EndOfFile <- !.
     let Some(grammar, cl) = peg_grammar |> DevHawk.Parser.Peg2.Grammar
     grammar.name |> should equal !!"PEG"
     grammar.defs |> List.length |> should equal 31
-    cl |> should equal []
+    cl |> should equal [] *)

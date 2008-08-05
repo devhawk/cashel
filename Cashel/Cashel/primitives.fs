@@ -8,13 +8,14 @@ open DevHawk.Parser.Core
 
 //let (!!) s = List.of_seq s
 
+
 //item assumes the input is a list and returns a tuple of the head and tail
 let item = 
     fun input ->
         match input with
         | x::xs -> Some(x,xs) 
         | [] -> None
-       
+        
 //ignore tosses the result of parsing function p 
 let ignore p = p >>= (fun x -> result ())
 
@@ -22,16 +23,17 @@ let ignore p = p >>= (fun x -> result ())
 let listify p = p >>= (fun x -> result [x])
 
 //satisfy checks the value returned from item against the predicate function p
-let satisfy p = 
+let satisfy parser pred = 
     parse {
-        let! x = item
-        if p x then return x }
+        let! x = parser
+        if pred x then return x }
+
 
 //any_of checks the value at the start of the input is in the list of items l
-let any_of l = satisfy (fun x -> List.exists (fun y -> x = y) l)
+let any_of l = satisfy item (fun x -> List.exists (fun y -> x = y) l)
 
 //item_equal checks the value at the start of the input matches the value v
-let item_equal v = satisfy (fun x -> x = v)
+let item_equal v = satisfy item (fun x -> x = v)
 
 //items_equal recursively uses item_equal to check to see if a list of values l matches the start of the input
 let rec items_equal l =
@@ -94,3 +96,4 @@ let (>>.) p1 p2 = parse {
     do! p1 |> ignore 
     let! x = p2
     return x }
+
