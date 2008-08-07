@@ -48,14 +48,9 @@ let test_combine_both_fail () =
     let p3 = zero +++ zero
     p3 "hello" |> should equal None
     
-
-//result a >>= f == f a
-//p >>= result == p
-//p >>= (fun a -> (f a >>= g)) == (p >>= (fun a -> f a)) >>= g
-
-
+[<Fact>]
+let test_monad_zero () =
+    let p = parse { if false then return 't' }
+    p "test" |> should equal None
     
 
-(*[<Fact>]
-let test_str () = 
-    token !!"test" !!"testing" |> should equal (Some((), !!"ing"))*)

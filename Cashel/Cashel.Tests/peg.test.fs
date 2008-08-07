@@ -6,7 +6,7 @@ let chr = Char.chr
 open Xunit
 open FsxUnit.Syntax
 
-open DevHawk.Parser
+
 open DevHawk.Parser.Peg
 
 
@@ -206,51 +206,51 @@ let test_Range_single_fail () =
     
 [<Fact>]
 let test_Class_single () =
-    Peg.Class !! "[a]test" |> should equal (Some([Single('a')], !!"test"))
+    DevHawk.Parser.Peg.Class !! "[a]test" |> should equal (Some([Single('a')], !!"test"))
 
 [<Fact>]
 let test_Class_single_spacing () =
-    Peg.Class !! "[a]\t\ttest" |> should equal (Some([Single('a')], !!"test"))
+    DevHawk.Parser.Peg.Class !! "[a]\t\ttest" |> should equal (Some([Single('a')], !!"test"))
     
 [<Fact>]
 let test_Class_single_range () =
-    Peg.Class !! "[a-z]test" |> should equal (Some([Dual('a', 'z')], !!"test"))
+    DevHawk.Parser.Peg.Class !! "[a-z]test" |> should equal (Some([Dual('a', 'z')], !!"test"))
     
 [<Fact>]
 let test_Class_multiple () =
-    Peg.Class !! "[ab-z]test" |> should equal (Some([Single('a');Dual('b','z')], !!"test"))
+    DevHawk.Parser.Peg.Class !! "[ab-z]test" |> should equal (Some([Single('a');Dual('b','z')], !!"test"))
 
 [<Fact>]
 let test_Class_failure_no_end_bracket () =
-    Peg.Class !! "[ab-ztest" |> should equal None
+    DevHawk.Parser.Peg.Class !! "[ab-ztest" |> should equal None
     
 [<Fact>]
 let test_Class_failure () =
-    Peg.Class !! "ab-z]test" |> should equal None
+    DevHawk.Parser.Peg.Class !! "ab-z]test" |> should equal None
 
 [<Fact>]
 let test_Literal_single_quote () =
-    Peg.Literal !! "'test'  me" |> should equal (Some(!!"test", !!"me"))
+    DevHawk.Parser.Peg.Literal !! "'test'  me" |> should equal (Some(!!"test", !!"me"))
 
 [<Fact>]
 let test_Literal_double_quote () =
-    Peg.Literal !! "\"test\"  me" |> should equal (Some(!!"test", !!"me"))
+    DevHawk.Parser.Peg.Literal !! "\"test\"  me" |> should equal (Some(!!"test", !!"me"))
 
 [<Fact>]
 let test_Literal_no_end_quote () =
-    Peg.Literal !! "\"test  me" |> should equal None
+    DevHawk.Parser.Peg.Literal !! "\"test  me" |> should equal None
 
 [<Fact>]
 let test_Identifier () =
-    Peg.Identifier !! "tE_s9t me" |> should equal (Some(!!"tE_s9t", !!"me"))
+    DevHawk.Parser.Peg.Identifier !! "tE_s9t me" |> should equal (Some(!!"tE_s9t", !!"me"))
 
 [<Fact>]
 let test_Identifier_start_with_underscore () =
-    Peg.Identifier !! "_9test me" |> should equal (Some(!!"_9test", !!"me"))
+    DevHawk.Parser.Peg.Identifier !! "_9test me" |> should equal (Some(!!"_9test", !!"me"))
 
 [<Fact>]
 let test_Identifier_fail_start_with_number () =
-    Peg.Identifier !! "9test me" |> should equal None
+    DevHawk.Parser.Peg.Identifier !! "9test me" |> should equal None
     
 [<Fact>]
 let test_Primary_Identifier () =
@@ -310,7 +310,13 @@ let test_SequenceItem_suffix_only_2 () =
     let si = {primaryItem=id;itemPrefix=None;itemSuffix=Some(Suffix.Plus)}
     let exp = Some(si, !!"me")
     SequenceItem !!"test+ me" |> should equal exp   
-      
+     
+[<Fact>]
+let test_Sequence () =
+    let createPrim id = {primaryItem=Primary.Identifier(!!id);itemPrefix=None;itemSuffix=None}
+    let exp = Some([createPrim "try"; createPrim "test"], !!"me <- now")
+    Sequence !!"try test me <- now" |> should equal exp
+    
 [<Fact>]  
 let test_PEG_grammar () =
     let peg_grammar = !! @"
@@ -354,53 +360,3 @@ EndOfFile <- !."
     let Some(defs, cl) = peg_grammar |> Grammar
     defs |> List.length |> should equal 29
     cl |> should equal []
-
-(*
-[<Fact>]  
-let test_PEG2_grammar () =
-    let peg_grammar = !! @"
-
-# Hierarchical syntax
-grammar PEG {
-Grammar <- Spacing Definition+ EndOfFile
-Definition <- Identifier LEFTARROW Expression
-Expression <- Sequence (SLASH Sequence)*
-Sequence <- Prefix*
-Prefix <- (AND / NOT)? Suffix
-Suffix <- Primary (QUESTION / STAR / PLUS)?
-Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
-
-# Lexical syntax
-Identifier <- IdentStart IdentCont* Spacing
-IdentStart <- [a-zA-Z_]
-IdentCont <- IdentStart / [0-9]
-
-Literal <- ['] (!['] Char)* ['] Spacing / [""] (![""] Char)* [""] Spacing
-Class <- '[' (!']' Range)* ']' Spacing
-Range <- Char '-' Char / Char
-Char <- '\\' [nrt'""\[\]\\] / '\\' [0-2][0-7][0-7] / '\\' [0-7][0-7]? / !'\\' .
-
-LEFTARROW <- '<-' Spacing
-SLASH <- '/' Spacing
-AND <- '&' Spacing
-NOT <- '!' Spacing
-QUESTION <- '?' Spacing
-STAR <- '*' Spacing
-PLUS <- '+' Spacing
-OPEN <- '(' Spacing
-CLOSE <- ')' Spacing
-LCURLY <- '{' Spacing #added left curly bracket
-RCURLY <- '}' Spacing #added right curly bracket
-DOT <- '.' Spacing
-
-Spacing <- (Space / Comment)*
-Comment <- '#' (!EndOfLine .)* EndOfLine
-Space <- ' ' / '\t' / EndOfLine
-EndOfLine <- '\r\n' / '\n' / '\r'
-EndOfFile <- !.
-}" 
-
-    let Some(grammar, cl) = peg_grammar |> DevHawk.Parser.Peg2.Grammar
-    grammar.name |> should equal !!"PEG"
-    grammar.defs |> List.length |> should equal 31
-    cl |> should equal [] *)

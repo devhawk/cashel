@@ -155,3 +155,21 @@ let test_repeat_until_fail_1 () =
 [<Fact>]
 let test_repeat_until_fail_2 () =
     (repeat_until (item_equal 'q') (item_equal 's')) !!"test" |> should equal None
+    
+[<Fact>]
+let test_skip_item () =
+    let exp = Some((), !!"est")
+    skip_item 't' !!"test" |> should equal exp
+
+[<Fact>]
+let test_skip_item_fail () =
+    skip_item 'e' !!"test" |> should equal None
+    
+[<Fact>]
+let test_skip_items () =
+    let exp = Some((), !!"st")
+    skip_items !!"te" !!"test" |> should equal exp
+
+[<Fact>]
+let test_skip_items_fail () =
+    skip_items !!"ts" !!"test" |> should equal None

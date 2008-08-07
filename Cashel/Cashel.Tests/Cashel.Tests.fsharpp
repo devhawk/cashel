@@ -55,6 +55,10 @@
     {
     "ProjRelPath" = "T"
     }
+    "peg2.test.fs"
+    {
+    "ProjRelPath" = "T"
+    }
 }
 "ProjStartupServices"
 {
