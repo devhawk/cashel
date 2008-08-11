@@ -6,303 +6,342 @@ let chr = Char.chr
 open Xunit
 open FsxUnit.Syntax
 
-
 open DevHawk.Parser.Peg2
+    
+let (>|>) act exp = 
+    match exp with
+    | None ->  act |> should equal exp
+    | Some(expV, expT) -> 
+        match act with
+        | Some(actV, actT) ->
+            actV |> should equal expV
+            let expT' = new System.String(List.to_array expT)
+            let actT' = new System.String(List.to_array actT)
+            actT' |> should equal expT'
+        | _ -> act |> should equal exp
+
     
 [<Fact>]
 let test_EndOfLine_with_slashr_slashn () = 
     let exp = Some(!!"\r\n",!!"test")
-    EndOfLine !!"\r\ntest" |> should equal exp
+    _EndOfLine !!"\r\ntest" >|> exp
 
 [<Fact>]
 let test_EndOfLine_with_slashr () = 
     let exp = Some(!!"\r",!!"test")
-    EndOfLine !!"\rtest" |> should equal exp
+    _EndOfLine !!"\rtest" >|> exp
 
 [<Fact>]
 let test_EndOfLine_with_slashn () = 
     let exp = Some(!!"\n",!!"test")
-    EndOfLine !!"\ntest" |> should equal exp
+    _EndOfLine !!"\ntest" >|> exp
 
 [<Fact>]
 let test_EndOfLine_with_no_slash () = 
-    EndOfLine !!"test" |> should equal None
+    _EndOfLine !!"test" >|> None
     
 [<Fact>]
 let test_EndOfLine_with_slashn_slashr () = 
     let exp = Some(!!"\n",!!"\rtest")
-    EndOfLine !!"\n\rtest" |> should equal exp
+    _EndOfLine !!"\n\rtest" >|> exp
 
 [<Fact>]
 let test_Space_with_space () = 
     let exp = Some(!!" ",!!"test")
-    Space !!" test" |> should equal exp
+    _Space !!" test" >|> exp
 
 [<Fact>]
 let test_Space_with_slasht () = 
     let exp = Some(!!"\t",!!"test")
-    Space !!"\ttest" |> should equal exp
+    _Space !!"\ttest" >|> exp
 
 [<Fact>]
 let test_Space_with_eol () = 
     let exp = Some(!!"\r\n",!!"test")
-    Space !!"\r\ntest" |> should equal exp
+    _Space !!"\r\ntest" >|> exp
 
 [<Fact>]
 let test_Comment () = 
-    let exp = Some(!!"test comment",!!"more text")
-    Comment !!"#test comment\r\nmore text" |> should equal exp
+    let exp = Some(!!"test _Comment",!!"more text")
+    _Comment !!"#test _Comment\r\nmore text" >|> exp
 
 [<Fact>]
 let test_Comment_not_comment () = 
-    Comment !!"test comment\r\nmore text" |> should equal None
+    _Comment !!"test _Comment\r\nmore text" >|> None
 
 [<Fact>]
 let test_Spacing_with_no_comment () = 
-    Spacing !!"test comment\r\nmore text" |> should equal (Some([], !!"test comment\r\nmore text"))
+    _Spacing !!"test _Comment\r\nmore text" >|> (Some([], !!"test _Comment\r\nmore text"))
 
 [<Fact>]
 let test_Spacing_with_comment () = 
-    let exp = Some([!!"test comment"],!!"more text")
-    Spacing !!"#test comment\r\nmore text" |> should equal exp
+    let exp = Some([!!"test _Comment"],!!"more text")
+    _Spacing !!"#test _Comment\r\nmore text" >|> exp
 
 [<Fact>]
 let test_Spacing_with_space () = 
     let exp = Some([!!" "],!!"more text")
-    Spacing !!" more text" |> should equal exp
+    _Spacing !!" more text" >|> exp
 
 [<Fact>]
 let test_Spacing_with_comment_and_space () = 
-    let exp = Some([!!" ";!!"test comment"],!!"more text")
-    Spacing !!" #test comment\r\nmore text" |> should equal exp
+    let exp = Some([!!" ";!!"test _Comment"],!!"more text")
+    _Spacing !!" #test _Comment\r\nmore text" >|> exp
 
 [<Fact>]
 let test_Spacing_with_space_and_comment () = 
-    let exp = Some([!!"test comment";[' '];[' '];[' '];[' ']],!!"more text")
-    let act = Spacing !!"#test comment\r\n    more text" 
-    act |> should equal exp
+    let exp = Some([!!"test _Comment";[' '];[' '];[' '];[' ']],!!"more text")
+    let act = _Spacing !!"#test _Comment\r\n    more text" 
+    act >|> exp
 
 [<Fact>]
-let test_dot () = DOT !!".test" |> should equal (Some('.', !!"test"))
+let test_dot () = _DOT !!".test" >|> (Some('.', !!"test"))
 
 [<Fact>]
-let test_dot_with_space () = DOT !!". \t  test" |> should equal (Some('.', !!"test"))
+let test_dot_with_space () = _DOT !!". \t  test" >|> (Some('.', !!"test"))
 
 [<Fact>]
-let test_dot_with_slasht () = DOT !!".\test" |> should equal (Some('.', !!"est"))
+let test_dot_with_slasht () = _DOT !!".\test" >|> (Some('.', !!"est"))
 
 [<Fact>]
-let test_dot_fail () = DOT !!"test" |> should equal None
+let test_dot_fail () = _DOT !!"test" >|> None
 
 [<Fact>]
-let test_slash () = SLASH !!"/test" |> should equal (Some('/', !!"test"))
+let test_slash () = _SLASH !!"/test" >|> (Some('/', !!"test"))
 
 [<Fact>]
-let test_slash_fail () = SLASH !!"test" |> should equal None
+let test_slash_fail () = _SLASH !!"test" >|> None
 
 [<Fact>]
 let test_LEFTARROW () = 
     let exp = Some(!!"<-",!!"more text")
-    LEFTARROW !!"<-more text" |> should equal exp
+    _LEFTARROW !!"<-more text" >|> exp
 
 [<Fact>]
 let test_LEFTARROW_with_space () = 
     let exp = Some(!!"<-",!!"more text")
-    LEFTARROW !!"<-\r\nmore text" |> should equal exp
+    _LEFTARROW !!"<-\r\nmore text" >|> exp
 
 [<Fact>]
 let test_LEFTARROW_fail () = 
-    LEFTARROW !!"q<-more text" |> should equal None
+    _LEFTARROW !!"q<-more text" >|> None
 
 [<Fact>]
 let test_Char_with_slashn () =
     let exp = Some('\n', !!"test")
-    _Char !! @"\ntest" |> should equal exp
+    _Char !! @"\ntest" >|> exp
 
 [<Fact>]
 let test_Char_with_slashr () =
     let exp = Some('\r', !!"test")
-    _Char !! @"\rtest" |> should equal exp
+    _Char !! @"\rtest" >|> exp
 
 [<Fact>]
 let test_Char_with_slasht () =
     let exp = Some('\t', !!"test")
-    _Char !! @"\ttest" |> should equal exp
+    _Char !! @"\ttest" >|> exp
 
     
 [<Fact>]
 let test_Char_with_slash () =
     let exp = Some('\\', !!"test")
-    _Char !! @"\\test" |> should equal exp
+    _Char !! @"\\test" >|> exp
 
 [<Fact>]
 let test_Char_with_no_slash () =
     let exp = Some('t', !!"est")
-    let act = _Char !! "test" 
-    act |> should equal exp
+    _Char !! "test" >|> exp
 
 [<Fact>]
 let test_Char_with_unicode_specification_0000 () =
     let exp = Some((chr  0x0000), !!"test")
-    _Char !! @"\u0000test" |> should equal exp
+    _Char !! @"\u0000test" >|> exp
     
 [<Fact>]
 let test_Char_with_unicode_specification_abcd () =
     let exp = Some((chr  0xabcd), !!"test")
-    _Char !! @"\uabcdtest" |> should equal exp
+    _Char !! @"\uabcdtest" >|> exp
     
 [<Fact>]
 let test_Char_with_unicode_specification_ABCD () =
     let exp = Some((chr  0xABCD), !!"test")
-    _Char !! @"\uABCDtest" |> should equal exp
+    _Char !! @"\uABCDtest" >|> exp
 
 [<Fact>]
 let test_Range_single () =
     let exp = Some(Single('t'), !!"est")
-    _Range !! "test" |> should equal exp
+    _Range !! "test" >|> exp
 
 [<Fact>]
 let test_Range_dual () =
     let exp = Some(Dual('t', 'e'), !!"st")
-    _Range !! "t-est" |> should equal exp
+    _Range !! "t-est" >|> exp
     
 [<Fact>]
 let test_Range_dual_fail_back_to_single () =
     let exp = Some(Single('t'), !!"-\\st")
-    _Range !! "t-\\st" |> should equal exp
+    _Range !! "t-\\st" >|> exp
 
 [<Fact>]
 let test_Range_single_fail () =
-    _Range !! "\\st" |> should equal None
+    _Range !! "\\st" >|> None
     
 [<Fact>]
 let test_Class_single () =
-    _Class !! "[a]test" |> should equal (Some([Single('a')], !!"test"))
+    _Class !! "[a]test" >|> (Some([Single('a')], !!"test"))
 
 [<Fact>]
 let test_Class_single_spacing () =
-    _Class !! "[a]\t\ttest" |> should equal (Some([Single('a')], !!"test"))
+    _Class !! "[a]\t\ttest" >|> (Some([Single('a')], !!"test"))
     
 [<Fact>]
 let test_Class_single_range () =
-    _Class !! "[a-z]test" |> should equal (Some([Dual('a', 'z')], !!"test"))
+    _Class !! "[a-z]test" >|> (Some([Dual('a', 'z')], !!"test"))
     
 [<Fact>]
 let test_Class_multiple () =
-    _Class !! "[ab-z]test" |> should equal (Some([Single('a');Dual('b','z')], !!"test"))
+    _Class !! "[ab-z]test" >|> (Some([Single('a');Dual('b','z')], !!"test"))
 
 [<Fact>]
 let test_Class_failure_no_end_bracket () =
-    _Class !! "[ab-ztest" |> should equal None
+    _Class !! "[ab-ztest" >|> None
     
 [<Fact>]
 let test_Class_failure () =
-    _Class !! "ab-z]test" |> should equal None
+    _Class !! "ab-z]test" >|> None
 
 [<Fact>]
 let test_Literal_single_quote () =
-    _Literal !! "'test'  me" |> should equal (Some("test", !!"me"))
+    _Literal !! "'test'  me" >|> (Some("test", !!"me"))
 
 [<Fact>]
 let test_Literal_double_quote () =
-    _Literal !! "\"test\"  me" |> should equal (Some("test", !!"me"))
+    _Literal !! "\"test\"  me" >|> (Some("test", !!"me"))
 
 [<Fact>]
 let test_Literal_no_end_quote () =
-    _Literal !! "\"test  me" |> should equal None
+    _Literal !! "\"test  me" >|> None
 
 [<Fact>]
 let test_Identifier () =
-    _Identifier !! "tE_s9t me" |> should equal (Some("tE_s9t", !!"me"))
+    _Identifier !! "tE_s9t me" >|> (Some("tE_s9t", !!"me"))
 
 [<Fact>]
 let test_Identifier_start_with_underscore () =
-    _Identifier !! "_9test me" |> should equal (Some("_9test", !!"me"))
+    _Identifier !! "_9test me" >|> (Some("_9test", !!"me"))
 
 [<Fact>]
 let test_Identifier_fail_start_with_number () =
-    _Identifier !! "9test me" |> should equal None
+    _Identifier !! "9test me" >|> None
     
 [<Fact>]
 let test_Primary_Identifier () =
-    _Primary !!"test me" |> should equal (Some(Identifier("test"), !!"me"))
+    _Primary !!"test me" >|> (Some(Identifier("test"), !!"me"))
 
 [<Fact>]
 let test_Primary_Literal () =
-    _Primary !!"'test' me" |> should equal (Some(Literal("test"), !!"me"))
+    _Primary !!"'test' me" >|> (Some(Literal("test"), !!"me"))
     
 [<Fact>]
 let test_Primary_class () =
     let exp = Some(Class([Dual('t','v');Single('z')]), !!"st me")
-    _Primary !!"[t-vz]  st me" |> should equal exp
+    _Primary !!"[t-vz]  st me" >|> exp
+
+[<Fact>]
+let test_Primary_production () =
+    let pl = [{item=Identifier("test");prefix=None;arity=None};{item=Identifier("me");prefix=None;arity=None};{item=Identifier("now");prefix=None;arity=None}]
+    let prod = Production({pattern=pl; action=Some("action3")})
+    let exp = Some(prod, !!"more testing")
+    _Primary !!"(test me now => action3)? more testing" >|> Some(prod, !!"? more testing")
     
-//TODO - test primary produciton
+
 [<Fact>]
 let test_Primary_dot () =
-    _Primary !!".\test me" |> should equal (Some(Primary.Dot, !!"est me"))
+    _Primary !!".\test me" >|> (Some(Dot, !!"est me"))
     
+[<Fact>]
+let test_Primary_dot_extra_debug () =
+    let input = !!".\test me" 
+    let exp = (Some(Dot, !!"est me"))
+    let act = _Primary input 
+    try
+        act >|> exp
+    with ex ->
+        let Some(ev, et) = exp
+        let Some(av, at) = act
+        let msg = sprintf "\ninput:\n%O \nExpected value:\n%O (%s) \nActual value:\n%O (%s)" (new System.String(List.to_array input)) ev (new System.String(List.to_array et)) av (new System.String(List.to_array at))
+        Assert.False(true,  msg)
+
 
 [<Fact>]
 let test_PatternItem () =
     let exp = Some({item=Identifier("test");prefix=None;arity=None}, !!"me")
-    _PatternItem !!"test me" |> should equal exp
+    _PatternItem !!"test me" >|> exp
+    
+[<Fact>]
+let test_patternitem_production () =
+    let pl = [{item=Identifier("test");prefix=None;arity=None};{item=Identifier("me");prefix=None;arity=None};{item=Identifier("now");prefix=None;arity=None}]
+    let prod = Production({pattern=pl; action=Some("action3")})
+    let pi = {item=prod;prefix=Some(Variable("s"));arity=Some(ZeroOrOne)}
+    _PatternItem !!"s:(test me now => action3)? more testing" >|> Some(pi, !!"more testing")
+
     
 [<Fact>]
 let test_PatternItem_plus_suffix () =
     let exp = Some({item=Identifier("test");prefix=None;arity=Some(OneOrMore)}, !!"me")
-    _PatternItem !!"test+ me" |> should equal exp
+    _PatternItem !!"test+ me" >|> exp
 
 [<Fact>]
 let test_PatternItem_star_suffix () =
     let exp = Some({item=Identifier("test");prefix=None;arity=Some(ZeroOrMore)}, !!"me")
-    _PatternItem !!"test* me" |> should equal exp
+    _PatternItem !!"test* me" >|> exp
     
 [<Fact>]
 let test_PatternItem_question_suffix () =
     let exp = Some({item=Identifier("test");prefix=None;arity=Some(ZeroOrOne)}, !!"me")
-    _PatternItem !!"test? me" |> should equal exp      
+    _PatternItem !!"test? me" >|> exp      
     
 [<Fact>]
 let test_PatternItem_and_prefix () =
     let exp = Some({item=Identifier("test");prefix=Some(SuccessPredicate);arity=None}, !!"me")
-    _PatternItem !!"&test me" |> should equal exp
+    _PatternItem !!"&test me" >|> exp
 
 [<Fact>]
 let test_PatternItem_bang_prefix () =
     let exp = Some({item=Identifier("test");prefix=Some(FailurePredicate);arity=None}, !!"me")
-    _PatternItem !!"!test me" |> should equal exp
+    _PatternItem !!"!test me" >|> exp
     
 [<Fact>]
 let test_PatternItem_variable_prefix () =
     let exp = Some({item=Identifier("test");prefix=Some(Variable("qa"));arity=None}, !!"me")
-    _PatternItem !!"qa:test me" |> should equal exp   
+    _PatternItem !!"qa:test me" >|> exp   
     
 [<Fact>]
 let test_PatternItem_variable_prefix_star_suffix () =
     let exp = Some({item=Identifier("test");prefix=Some(Variable("qa"));arity=Some(ZeroOrMore)}, !!"me")
-    _PatternItem !!"qa:test* me" |> should equal exp   
+    _PatternItem !!"qa:test* me" >|> exp   
 
 [<Fact>]
 let test_Production_one_pattern_item_no_action () =
     let exp = Some({pattern=[{item=Identifier("test");prefix=None;arity=None}]; action=None}, !!"/")
-    _Production !!"test /" |> should equal exp
+    _Production !!"test /" >|> exp
     
 [<Fact>]
 let test_Production_three_pattern_items_no_action () =
     let pl = [{item=Identifier("test");prefix=None;arity=None};{item=Identifier("me");prefix=None;arity=None};{item=Identifier("now");prefix=None;arity=None}]
     let exp = Some({pattern=pl; action=None}, !!"/")
-    _Production !!"test me now/" |> should equal exp
+    _Production !!"test me now/" >|> exp
     
 [<Fact>]
 let test_Production_one_pattern_item_with_action () =
     let exp = Some({pattern=[{item=Identifier("test");prefix=None;arity=None}]; action=Some("action")}, !!"/")
-    _Production !!"test => action/" |> should equal exp
+    _Production !!"test => action/" >|> exp
     
 [<Fact>]
 let test_Production_three_pattern_items_with_action () =
     let pl = [{item=Identifier("test");prefix=None;arity=None};{item=Identifier("me");prefix=None;arity=None};{item=Identifier("now");prefix=None;arity=None}]
     let exp = Some({pattern=pl; action=Some("action")}, !!"/")
-    _Production !!"test me now => action/" |> should equal exp
+    _Production !!"test me now => action/" >|> exp
     
 [<Fact>]
 let test_Rule_one_production () =
@@ -311,7 +350,7 @@ let test_Rule_one_production () =
     let exprule = {name="rulename";productions=[prod]}
     let exp = Some(exprule, !!"foobar")
     let act = _Rule !!"rulename <- test me now ; foobar" 
-    act |> should equal exp
+    act >|> exp
     
 [<Fact>]
 let test_Rule_two_productions () =
@@ -320,7 +359,7 @@ let test_Rule_two_productions () =
     let exprule = {name="rulename";productions=[prod1;prod2]}
     let exp = Some(exprule, !!"foobar")
     let act = _Rule !!"rulename <- test me now / another test; foobar" 
-    act |> should equal exp
+    act >|> exp
     
 [<Fact>]
 let test_Rule_one_production_with_action () =
@@ -329,7 +368,7 @@ let test_Rule_one_production_with_action () =
     let exprule = {name="rulename";productions=[prod]}
     let exp = Some(exprule, !!"foobar")
     let act = _Rule !!"rulename <- test me now => Action; foobar" 
-    act |> should equal exp
+    act >|> exp
     
 [<Fact>]
 let test_Rule_two_productions_with_actions () =
@@ -338,51 +377,47 @@ let test_Rule_two_productions_with_actions () =
     let exprule = {name="rulename";productions=[prod1;prod2]}
     let exp = Some(exprule, !!"foobar")
     let act = _Rule !!"rulename <- test me now => Action1/ another test => Action2; foobar" 
-    act |> should equal exp
+    act >|> exp
+    
+[<Fact>]
+let test_sample_grammar () =
+    let grammar = !! @"
+PEG2 
+{
+    Grammar <- Spacing i:Identifier OCURLY r:Rule+ CCURLY EndOfFile => ir;
+    Rule <- i:Identifier LEFTARROW p1:Production p2:(SLASH p3:Production => p3)* SEMICOLON => ip1p2;
+    Production <- pi:PatternItem+ a:(RIGHTARROW a:Action => a)?;
+    Suffix <- QUESTION => ZeroOrOne / STAR => ZeroOrMore / PLUS => OneOrMore;
+    Prefix <- AND => SucessPred / NOT => FailPred / i:Identifier COLON => il;
+    PatternItem <- pre:Prefix? pri:Primary suf:Suffix? => pre_pri_suf;
+}
+
+"
     
     
-(*[<Fact>]  
-let test_PEG_grammar () =
-    let peg_grammar = !! @"
+    let Some(g, cl) = _Grammar grammar 
+    let {name=id; rules=rl} = g
+    Assert.Equal("PEG2", id)
+    Assert.Equal(6, (List.length rl))
+    Assert.Equal([], cl)
 
-# Hierarchical syntax
-Grammar <- Spacing Definition+ EndOfFile
-Definition <- Identifier LEFTARROW Expression
-Expression <- Sequence (SLASH Sequence)*
-Sequence <- Prefix*
-Prefix <- (AND / NOT)? arity
-arity <- Primary (QUESTION / STAR / PLUS)?
-Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+[<Fact>]
+let test_parse () =
+    let input = @"
+PEG2 
+{
+    Grammar <- Spacing i:Identifier OCURLY r:Rule+ CCURLY EndOfFile => ir;
+    Rule <- i:Identifier LEFTARROW p1:Production p2:(SLASH p3:Production => p3)* SEMICOLON => ip1p2;
+    Production <- pi:PatternItem+ a:(RIGHTARROW a:Action => a)?;
+    Suffix <- QUESTION => ZeroOrOne / STAR => ZeroOrMore / PLUS => OneOrMore;
+    Prefix <- AND => SucessPred / NOT => FailPred / i:Identifier COLON => il;
+    PatternItem <- pre:Prefix? pri:Primary suf:Suffix? => pre_pri_suf;
+}
 
-# Lexical syntax
-Identifier <- IdentStart IdentCont* Spacing
-IdentStart <- [a-zA-Z_]
-IdentCont <- IdentStart / [0-9]
-
-Literal <- ['] (!['] _Char)* ['] Spacing / [""] (![""] _Char)* [""] Spacing
-Class <- '[' (!']' _Range)* ']' Spacing
-_Range <- _Char '-' _Char / _Char
-_Char <- '\\' [nrt'""\[\]\\] / '\\' [0-2][0-7][0-7] / '\\' [0-7][0-7]? / !'\\' .
-
-LEFTARROW <- '<-' Spacing
-SLASH <- '/' Spacing
-AND <- '&' Spacing
-NOT <- '!' Spacing
-QUESTION <- '?' Spacing
-STAR <- '*' Spacing
-PLUS <- '+' Spacing
-OPEN <- '(' Spacing
-CLOSE <- ')' Spacing
-DOT <- '.' Spacing
-
-Spacing <- (Space / Comment)*
-Comment <- '#' (!EndOfLine .)* EndOfLine
-Space <- ' ' / '\t' / EndOfLine
-EndOfLine <- '\r\n' / '\n' / '\r'
-EndOfFile <- !." 
-
-    let Some(defs, cl) = peg_grammar |> Grammar
-    defs |> List.length |> should equal 29
-    cl |> should equal []*)
-
-
+"
+    
+    
+    let Some(g) = Parse input
+    let {name=id; rules=rl} = g
+    Assert.Equal("PEG2", id)
+    Assert.Equal(6, (List.length rl))
