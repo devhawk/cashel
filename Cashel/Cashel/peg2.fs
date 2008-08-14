@@ -174,74 +174,78 @@ type Grammar =
 open DevHawk.Parser.Core
 open DevHawk.Parser.Primitives
         
+let _EndOfFile = !~ item
+
 ///EndOfLine  <- '\r\n' / '\n' / '\r'
-let _EndOfLine = parse {
+let _EndOfLine = parser {
     return! items_equal (List.of_seq "\r\n")
     return! item_equal '\n' |> listify
-    return! item_equal '\r' |> listify }
+    return! item_equal '\r' |> listify } |> ignore
 
 ///Space      <- ' ' / '\t' / EndOfLine
-let _Space = parse {
-    return! item_equal ' ' |> listify
-    return! item_equal '\t' |> listify
-    return! _EndOfLine }
+let _Space = parser {
+    return! item_equal ' ' |> ignore
+    return! item_equal '\t' |> ignore
+    return! _EndOfLine } |> ignore
 
 ///Comment    <- '#' (!EndOfLine .)* EndOfLine
-let _Comment = parse {
+let _Comment = parser {
     do! skip_item '#' 
-    let! c = repeat_until item _EndOfLine
-    return c }
+    do! repeat_until item _EndOfLine |> ignore
+    return () } 
           
 ///Spacing    <- (Space / Comment)*
-let _Spacing = parse {
+let _Spacing = ignore (parser {
     return! _Space 
-    return! _Comment } |> repeat
+    return! _Comment } |> repeat)
 
+let parse p = _Spacing >>. p
+let token p = ignore (p .>> _Spacing)
 
 ///DOT        <- '.' Spacing
-let _DOT = item_equal '.' .>> _Spacing
+let _DOT = token (item_equal '.')
 
 ///OPEN       <- '(' Spacing
-let _OPAREN = item_equal '(' .>> _Spacing
+let _OPAREN = token (item_equal '(')
 
 ///CLOSE      <- ')' Spacing
-let _CPAREN = item_equal ')' .>> _Spacing
+let _CPAREN = token (item_equal ')')
 
 ///AND        <- '&' Spacing
-let _AND = item_equal '&' .>> _Spacing
+let _AND = token (item_equal '&')
 
 ///NOT        <- '!' Spacing
-let _NOT = item_equal '!' .>> _Spacing
+let _NOT = token (item_equal '!')
 
 ///QUESTION   <- '?' Spacing
-let _QUESTION = item_equal '?' .>> _Spacing
+let _QUESTION = token (item_equal '?')
 
 ///STAR       <- '*' Spacing
-let _STAR = item_equal '*' .>> _Spacing
+let _STAR = token (item_equal '*')
 
 ///PLUS       <- '+' Spacing
-let _PLUS = item_equal '+' .>> _Spacing 
+let _PLUS = token (item_equal '+')
 
 ///COLON       <- ':' Spacing
-let _COLON = item_equal ':' .>> _Spacing 
+let _COLON = token (item_equal ':')
 
-///COLON       <- ':' Spacing
-let _SEMICOLON = item_equal ';' .>> _Spacing 
+///SEMICOLON       <- ';' Spacing
+let _SEMICOLON = token (item_equal ';')
 
 ///RIGHTARROW  <- '=>' Spacing
-let _RIGHTARROW = items_equal (List.of_seq "=>") .>> _Spacing
+let _RIGHTARROW = token (items_equal (List.of_seq "=>"))
 
 ///SLASH      <- '/' Spacing
-let _SLASH = item_equal '/' .>> _Spacing
+let _SLASH = token (item_equal '/')
 
 ///OPEN       <- '(' Spacing
-let _OCURLY = item_equal '{' .>> _Spacing
+let _OCURLY = token (item_equal '{')
 
 ///CLOSE      <- ')' Spacing
-let _CCURLY = item_equal '}' .>> _Spacing
+let _CCURLY = token (item_equal '}')
 
 ///LEFTARROW  <- '<-' Spacing
-let _LEFTARROW = items_equal (List.of_seq "<-") .>> _Spacing
+let _LEFTARROW = token (items_equal (List.of_seq "<-"))
 
 
 ///Char <- '\\' [nrt'""\[\]\\] / '\\u' [a-fA-F0-9] [a-fA-F0-9] [a-fA-F0-9] [a-fA-F0-9] / !'\\' .
@@ -251,11 +255,11 @@ let _Char =
 
     let hex2int c = 
         let c = System.Char.ToUpper(c)
-        if   System.Char.IsDigit(c) then Char.code c - Char.code '0'
-        elif 'A' <= c && c <= 'F' then Char.code c - Char.code 'A' + 10 
+        if   System.Char.IsDigit(c) then int c - int '0'
+        elif 'A' <= c && c <= 'F' then int c - int 'A' + 10 
         else failwith "Invalid Hex Digit"
     
-    parse {
+    parser {
         do! skip_item '\\' 
         let! c = any_of ['n';'r';'t';'''; '"'; '['; ']'; '\\']
         match c with
@@ -264,34 +268,34 @@ let _Char =
         | 't' -> return '\t'
         | _ -> return c } 
     +++
-    parse {        
+    parser {        
         do! skip_item '\\' 
         do! skip_item 'u' 
         let! h1 = _HexDigit
         let! h2 = _HexDigit
         let! h3 = _HexDigit
         let! h4 = _HexDigit
-        return Char.chr ((hex2int h1)*4096 + (hex2int h2)*256 + (hex2int h3)*16 + (hex2int h4)) }
+        return char ((hex2int h1)*4096 + (hex2int h2)*256 + (hex2int h3)*16 + (hex2int h4)) }
     +++ 
-    parse {
+    parser {
         do! !~ (item_equal '\\')
         return! item }
     
 ///Range      <- Char '-' Char / Char
 let _Range =
-    parse {
+    parser {
         let! c1 = _Char
         do! skip_item '-' 
         let! c2 = _Char
         return Dual(c1, c2) }
     +++
-    parse {
+    parser {
         let! c1 = _Char
         return Single(c1) }
 
 ///Class      <- '[' (!']' Range)* ']' Spacing
 let _Class =
-    parse {
+    parser {
         do! skip_item '['
         let! rl = repeat_until _Range (item_equal ']')
         do! ignore _Spacing 
@@ -301,7 +305,7 @@ let _Class =
 ///Literal    <- ['] (!['] Char)* ['] Spacing / ["] (!["] Char)* [""] Spacing    
 let _Literal =
     let literal_workhorse ch = 
-        parse {
+        parser {
             do! skip_item ch
             let! cl = repeat_until _Char (item_equal ch)
             do! ignore _Spacing 
@@ -311,7 +315,7 @@ let _Literal =
 
 ///Identifier <- [a-zA-Z_] ([_a-zA-Z0-9])* Spacing
 let _Identifier =
-    parse {
+    parser {
         let! c = any_of (['_'] @ ['a'..'z'] @ ['A'..'Z'])
         let! cs = repeat (any_of (['_'] @ ['a'..'z'] @ ['A'..'Z'] @ ['0'..'9']))
         do! ignore _Spacing 
@@ -320,24 +324,24 @@ let _Identifier =
 //Stub out Action for now    
 let _Action = _Identifier
 
-///Primary <- Identifier !LEFTARROW  / OPEN Production CLOSE / Literal / Class / DOT
+///Primary <- Identifier / OPEN Production CLOSE / Literal / Class / DOT
 //Had to name this method pPrimary to avoid conflict with Primary discriminated union
 let rec _Primary =
-    parse {
+    parser {
         let! id = _Identifier
         return Identifier(id) }
     +++ 
-    parse {
+    parser {
         do! ignore _OPAREN 
         let! prod = _Production
         do! ignore _CPAREN 
         return Production(prod) }        
     +++ 
-    parse {
+    parser {
         let! lit = _Literal
         return Literal(lit) }        
     +++ 
-    parse {
+    parser {
         let! cls = _Class
         return Class(cls) }
     +++ 
@@ -353,7 +357,7 @@ and _PatternItem =
         +++ 
         (_NOT >>$ FailurePredicate)
         +++ 
-        parse {
+        parser {
             let! id = _Identifier
             do! _COLON |> ignore
             return Variable(id) }
@@ -365,7 +369,7 @@ and _PatternItem =
         +++ 
         (_PLUS >>$ OneOrMore)
 
-    parse {
+    parser {
         let! pre = !? _Prefix
         let! pri = _Primary
         let! suf = !? _Arity
@@ -373,14 +377,14 @@ and _PatternItem =
 
 ///Production <- PatternItem+ (RIGHTARROW Action)?
 and _Production = 
-    parse {
+    parser {
         let! pl = repeat1 _PatternItem
         let! a = !? (_RIGHTARROW >>. _Action)
         return {pattern=pl; action=a}  }
 
 ///Rule <- Identifier LEFTARROW Production (SLASH Production)* SEMICOLON
 let _Rule =
-    parse {
+    parser {
         let! id = _Identifier
         do! ignore _LEFTARROW
         let! p = _Production
@@ -390,13 +394,13 @@ let _Rule =
 
 ///Grammar <- Spacing Identifier OCURLY Rule+ CCURLY EndOfFile
 let _Grammar =
-    parse {
+    parser {
         do! ignore _Spacing
         let! id = _Identifier
-        do! ignore _OCURLY
+        do! _OCURLY
         let! rl = repeat1 _Rule
-        do! ignore _CCURLY
-        do! eof
+        do! _CCURLY
+        do! _EndOfFile
         return {name=id; rules=rl} }
 
 let Parse (input:string) =
@@ -404,3 +408,6 @@ let Parse (input:string) =
     match g with 
     | Some(g, []) -> Some(g)
     | _ -> None
+    
+
+

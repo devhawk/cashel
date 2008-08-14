@@ -6,6 +6,9 @@ module Primitives
 
 open DevHawk.Parser.Core
 
+//-------------------------Basic primitives----------------------------------------------------
+//These primitives make no assumption as to the basic types of the parser input or result types
+
 ///Custom bind operator >>$ binds parser p to result v, ignoring the return value of p
 let (>>$) p v = p >>= (fun _ -> result v)
 
@@ -57,14 +60,14 @@ let repeat_until p1 p2 =  repeat (!~ p2 >>. p1) .>> p2
 
 //-------------------------List primitives-------------------------------------------
 ///item assumes the input is a list and returns a tuple of the head and tail
-let item = 
+let item : Parser<'a list, 'a> = 
     fun input ->
         match input with
         | x::xs -> Some(x,xs) 
         | [] -> None
         
 ///eof checks that we're at the end of the list being parsed
-let eof = 
+let eof : Parser<'a list, unit> = 
     fun input ->
         match input with
         | [] -> Some((), []) 
@@ -88,3 +91,17 @@ let skip_item v = item_equal v |> ignore
 ///skip_items calls items_equal but tosses the parse value
 let skip_items l = items_equal l |> ignore
 
+
+//-------------------------char list primitives-------------------------------------------
+
+let add_line_and_col cl =
+    let rec worker cl line col =
+        match cl with
+        | '\r'::'\n'::tail -> ('\r', line, col)::('\n', line, (col+1))::(worker tail (line+1) 1)
+        | '\n'::tail -> ('\n', line, col)::(worker tail (line+1) 1)
+        | '\r'::tail -> ('\r', line, col)::(worker tail (line+1) 1)
+        | head::tail -> (head, line, col)::(worker tail line (col+1))
+        | [] -> []
+    worker cl 1 1 
+
+    

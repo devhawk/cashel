@@ -1,7 +1,49 @@
 #light
 
 let (!!) str = List.of_seq str
-let chr = Char.chr
+let chr (c:int) = System.Convert.ToChar(c)
+
+let peg2grammar = @"
+PEG2 
+{
+    Grammar <- Spacing i:Identifier OCURLY r:Rule+ CCURLY EndOfFile => ir;
+    Rule <- i:Identifier LEFTARROW p1:Production p2:(SLASH p3:Production => p3)* SEMICOLON => ip1p2;
+    Production <- pi:PatternItem+ a:(RIGHTARROW a:Action => a)? => pia;
+    Suffix <- QUESTION => ZeroOrOne / STAR => ZeroOrMore / PLUS => OneOrMore;
+    Prefix <- AND => SucessPred / NOT => FailPred / i:Identifier COLON => il;
+    PatternItem <- pre:Prefix? pri:Primary suf:Suffix? => pre_pri_suf;
+    Primary <- i:Identifier => i / OPEN p:Production CLOSE => p/ l:Literal => l/ c:Class => c / DOT => dot;
+    Action <- i:Identifier => i;
+    Identifier <- p1:[a-zA-Z_] pr:[_a-zA-Z0-9]* Spacing => p1pr;
+    Literal    <- ['] cl:(!['] c:Char=>c)* ['] Spacing => cl / [""] cl:(![""] c:Char=>c)* [""] Spacing => cl ;
+    Class      <- '[' r:(!']' r:Range=>r)* ']' Spacing => r;
+    Range      <- c1:Char '-' c2:Char => c1c2 / c:Char => c;
+    Char <- '\\' c:[nrt'""\[\]\\] => c / '\\u' h1:HexDigit h2:HexDigit h3:HexDigit h4:HexDigit =>h1h2h3h4/ !'\\' c:. => c;
+    HexDigit <- c:[a-fA-F0-9] => c;
+    LEFTARROW  <- '<-' Spacing;
+    CLOSE      <- ')' Spacing;
+    OPEN       <- '(' Spacing;
+    SLASH      <- '/' Spacing;
+    RIGHTARROW  <- '=>' Spacing;
+    COLON       <- ':' Spacing;
+    SEMICOLON       <- ';' Spacing;
+    DOT        <- '.' Spacing;
+    OPEN       <- '(' Spacing;
+    CLOSE      <- ')' Spacing;
+    AND        <- '&' Spacing;
+    NOT       <- '!' Spacing;
+    QUESTION   <- '?' Spacing;
+    STAR       <- '*' Spacing;
+    PLUS       <- '+' Spacing;
+    Spacing    <- SpaceOrComment*;
+    SpaceOrComment    <- Space / Comment;
+    Comment    <- '#' (!EndOfLine .)* EndOfLine;
+    Space      <- ' ' / '\t' / EndOfLine;
+    EndOfLine  <- '\r\n' / '\n' / '\r';
+    EndOfFile  <- !.;
+}
+
+"
 
 open Xunit
 open FsxUnit.Syntax
@@ -22,18 +64,26 @@ let (>|>) act exp =
 
     
 [<Fact>]
+let test_eof () = 
+    _EndOfFile [] |> should equal (Some((),[]))
+    
+[<Fact>]
+let test_eof_fails_not_at_end () = 
+    _EndOfFile !!"test" |> should equal None
+    
+[<Fact>]
 let test_EndOfLine_with_slashr_slashn () = 
-    let exp = Some(!!"\r\n",!!"test")
+    let exp = Some((),!!"test")
     _EndOfLine !!"\r\ntest" >|> exp
 
 [<Fact>]
 let test_EndOfLine_with_slashr () = 
-    let exp = Some(!!"\r",!!"test")
+    let exp = Some((),!!"test")
     _EndOfLine !!"\rtest" >|> exp
 
 [<Fact>]
 let test_EndOfLine_with_slashn () = 
-    let exp = Some(!!"\n",!!"test")
+    let exp = Some((),!!"test")
     _EndOfLine !!"\ntest" >|> exp
 
 [<Fact>]
@@ -42,27 +92,27 @@ let test_EndOfLine_with_no_slash () =
     
 [<Fact>]
 let test_EndOfLine_with_slashn_slashr () = 
-    let exp = Some(!!"\n",!!"\rtest")
+    let exp = Some((),!!"\rtest")
     _EndOfLine !!"\n\rtest" >|> exp
 
 [<Fact>]
 let test_Space_with_space () = 
-    let exp = Some(!!" ",!!"test")
+    let exp = Some((),!!"test")
     _Space !!" test" >|> exp
 
 [<Fact>]
 let test_Space_with_slasht () = 
-    let exp = Some(!!"\t",!!"test")
+    let exp = Some((),!!"test")
     _Space !!"\ttest" >|> exp
 
 [<Fact>]
 let test_Space_with_eol () = 
-    let exp = Some(!!"\r\n",!!"test")
+    let exp = Some((),!!"test")
     _Space !!"\r\ntest" >|> exp
 
 [<Fact>]
 let test_Comment () = 
-    let exp = Some(!!"test _Comment",!!"more text")
+    let exp = Some((),!!"more text")
     _Comment !!"#test _Comment\r\nmore text" >|> exp
 
 [<Fact>]
@@ -71,55 +121,55 @@ let test_Comment_not_comment () =
 
 [<Fact>]
 let test_Spacing_with_no_comment () = 
-    _Spacing !!"test _Comment\r\nmore text" >|> (Some([], !!"test _Comment\r\nmore text"))
+    _Spacing !!"test _Comment\r\nmore text" >|> (Some((), !!"test _Comment\r\nmore text"))
 
 [<Fact>]
 let test_Spacing_with_comment () = 
-    let exp = Some([!!"test _Comment"],!!"more text")
+    let exp = Some((),!!"more text")
     _Spacing !!"#test _Comment\r\nmore text" >|> exp
 
 [<Fact>]
 let test_Spacing_with_space () = 
-    let exp = Some([!!" "],!!"more text")
+    let exp = Some((),!!"more text")
     _Spacing !!" more text" >|> exp
 
 [<Fact>]
 let test_Spacing_with_comment_and_space () = 
-    let exp = Some([!!" ";!!"test _Comment"],!!"more text")
+    let exp = Some((),!!"more text")
     _Spacing !!" #test _Comment\r\nmore text" >|> exp
 
 [<Fact>]
 let test_Spacing_with_space_and_comment () = 
-    let exp = Some([!!"test _Comment";[' '];[' '];[' '];[' ']],!!"more text")
+    let exp = Some((),!!"more text")
     let act = _Spacing !!"#test _Comment\r\n    more text" 
     act >|> exp
 
 [<Fact>]
-let test_dot () = _DOT !!".test" >|> (Some('.', !!"test"))
+let test_dot () = _DOT !!".test" >|> (Some((), !!"test"))
 
 [<Fact>]
-let test_dot_with_space () = _DOT !!". \t  test" >|> (Some('.', !!"test"))
+let test_dot_with_space () = _DOT !!". \t  test" >|> (Some((), !!"test"))
 
 [<Fact>]
-let test_dot_with_slasht () = _DOT !!".\test" >|> (Some('.', !!"est"))
+let test_dot_with_slasht () = _DOT !!".\test" >|> (Some((), !!"est"))
 
 [<Fact>]
 let test_dot_fail () = _DOT !!"test" >|> None
 
 [<Fact>]
-let test_slash () = _SLASH !!"/test" >|> (Some('/', !!"test"))
+let test_slash () = _SLASH !!"/test" >|> (Some((), !!"test"))
 
 [<Fact>]
 let test_slash_fail () = _SLASH !!"test" >|> None
 
 [<Fact>]
 let test_LEFTARROW () = 
-    let exp = Some(!!"<-",!!"more text")
+    let exp = Some((),!!"more text")
     _LEFTARROW !!"<-more text" >|> exp
 
 [<Fact>]
 let test_LEFTARROW_with_space () = 
-    let exp = Some(!!"<-",!!"more text")
+    let exp = Some((),!!"more text")
     _LEFTARROW !!"<-\r\nmore text" >|> exp
 
 [<Fact>]
@@ -267,8 +317,8 @@ let test_Primary_dot_extra_debug () =
     try
         act >|> exp
     with ex ->
-        let Some(ev, et) = exp
-        let Some(av, at) = act
+        let ev, et = exp |> Option.get
+        let av, at = act |> Option.get
         let msg = sprintf "\ninput:\n%O \nExpected value:\n%O (%s) \nActual value:\n%O (%s)" (new System.String(List.to_array input)) ev (new System.String(List.to_array et)) av (new System.String(List.to_array at))
         Assert.False(true,  msg)
 
@@ -379,45 +429,18 @@ let test_Rule_two_productions_with_actions () =
     let act = _Rule !!"rulename <- test me now => Action1/ another test => Action2; foobar" 
     act >|> exp
     
+    
 [<Fact>]
 let test_sample_grammar () =
-    let grammar = !! @"
-PEG2 
-{
-    Grammar <- Spacing i:Identifier OCURLY r:Rule+ CCURLY EndOfFile => ir;
-    Rule <- i:Identifier LEFTARROW p1:Production p2:(SLASH p3:Production => p3)* SEMICOLON => ip1p2;
-    Production <- pi:PatternItem+ a:(RIGHTARROW a:Action => a)?;
-    Suffix <- QUESTION => ZeroOrOne / STAR => ZeroOrMore / PLUS => OneOrMore;
-    Prefix <- AND => SucessPred / NOT => FailPred / i:Identifier COLON => il;
-    PatternItem <- pre:Prefix? pri:Primary suf:Suffix? => pre_pri_suf;
-}
-
-"
-    
-    
-    let Some(g, cl) = _Grammar grammar 
+    let g, cl = _Grammar !!peg2grammar |> Option.get
     let {name=id; rules=rl} = g
     Assert.Equal("PEG2", id)
-    Assert.Equal(6, (List.length rl))
+    Assert.Equal(35, (List.length rl))
     Assert.Equal([], cl)
 
 [<Fact>]
 let test_parse () =
-    let input = @"
-PEG2 
-{
-    Grammar <- Spacing i:Identifier OCURLY r:Rule+ CCURLY EndOfFile => ir;
-    Rule <- i:Identifier LEFTARROW p1:Production p2:(SLASH p3:Production => p3)* SEMICOLON => ip1p2;
-    Production <- pi:PatternItem+ a:(RIGHTARROW a:Action => a)?;
-    Suffix <- QUESTION => ZeroOrOne / STAR => ZeroOrMore / PLUS => OneOrMore;
-    Prefix <- AND => SucessPred / NOT => FailPred / i:Identifier COLON => il;
-    PatternItem <- pre:Prefix? pri:Primary suf:Suffix? => pre_pri_suf;
-}
-
-"
-    
-    
-    let Some(g) = Parse input
+    let g = Parse peg2grammar |> Option.get
     let {name=id; rules=rl} = g
     Assert.Equal("PEG2", id)
-    Assert.Equal(6, (List.length rl))
+    Assert.Equal(35, (List.length rl))

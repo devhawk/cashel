@@ -150,25 +150,25 @@ open DevHawk.Parser.Primitives
 let EndOfFile = eof
         
 ///EndOfLine  <- '\r\n' / '\n' / '\r'
-let EndOfLine = parse {
+let EndOfLine = parser {
     return! items_equal (List.of_seq "\r\n")
     return! item_equal '\n' |> listify
     return! item_equal '\r' |> listify }
 
 ///Space      <- ' ' / '\t' / EndOfLine
-let Space = parse {
+let Space = parser {
     return! item_equal ' ' |> listify
     return! item_equal '\t' |> listify
     return! EndOfLine }
 
 ///Comment    <- '#' (!EndOfLine .)* EndOfLine
-let Comment = parse {
+let Comment = parser {
     do! skip_item '#' 
     let! c = repeat_until item EndOfLine
     return c }
           
 ///Spacing    <- (Space / Comment)*
-let Spacing = parse {
+let Spacing = parser {
     return! Space 
     return! Comment } |> repeat
 
@@ -204,9 +204,9 @@ let LEFTARROW = items_equal (List.of_seq "<-") .>> Spacing
 
 ///Char <- '\\' [nrt'""\[\]\\] / '\\' [0-2][0-7][0-7] / '\\' [0-7][0-7]? / !'\\' .
 let Char = 
-    let c2i c = Char.code c - Char.code '0'
+    let c2i c = int c - int '0'
     
-    parse {
+    parser {
         do! skip_item '\\' 
         let! c = any_of ['n';'r';'t';'''; '"'; '['; ']'; '\\']
         match c with
@@ -215,40 +215,40 @@ let Char =
         | 't' -> return '\t'
         | _ -> return c } 
     +++
-    parse {        
+    parser {        
         do! skip_item '\\' 
         let! c1 = any_of ['0'..'2'] 
         let! c2 = any_of ['0'..'7']
         let! c3 = any_of ['0'..'7']
-        return Char.chr ((c2i c1)*64 + (c2i c2)*8 + (c2i c3)) }
+        return char ((c2i c1)*64 + (c2i c2)*8 + (c2i c3)) }
     +++
-    parse {        
+    parser {        
         do! skip_item '\\' 
         let! c1 = any_of ['0'..'7']
         let! c2 = !? (any_of ['0'..'7'])
         match c2 with
-        | Some(c2) -> return Char.chr ((c2i c1)*8 + (c2i c2))
-        | None -> return Char.chr (c2i c1) } 
+        | Some(c2) -> return char ((c2i c1)*8 + (c2i c2))
+        | None -> return char (c2i c1) } 
     +++ 
-    parse {
+    parser {
         do! !~ (item_equal '\\')
         return! item }
     
 ///Range      <- Char '-' Char / Char
 let Range =
-    parse {
+    parser {
         let! c1 = Char
         do! skip_item '-' 
         let! c2 = Char
         return Dual(c1, c2) }
     +++
-    parse {
+    parser {
         let! c1 = Char
         return Single(c1) }
      
 ///Class      <- '[' (!']' Range)* ']' Spacing
 let Class =
-    parse {
+    parser {
         do! skip_item '['
         let! rl = repeat_until Range (item_equal ']')
         do! ignore Spacing 
@@ -257,7 +257,7 @@ let Class =
            
 ///Literal    <- ['] (!['] Char)* ['] Spacing / ["] (!["] Char)* [""] Spacing    
 let Literal =
-    let literal_workhorse ch = parse {
+    let literal_workhorse ch = parser {
         do! skip_item ch
         let! cl = repeat_until Char (item_equal ch)
         do! ignore Spacing 
@@ -269,10 +269,10 @@ let Literal =
 //IdentStart <- [a-zA-Z_]
 //IdentCont  <- IdentStart / [0-9]            
 let Identifier =
-    let IdentStart = any_of (List.flatten [['a'..'z']; ['A'..'Z']; ['_']])
+    let IdentStart = any_of (['a'..'z']@['A'..'Z']@['_'])
     let IdentCont = IdentStart +++ any_of ['0'..'9']
 
-    parse {
+    parser {
         let! c = IdentStart
         let! cs = repeat IdentCont 
         do! ignore Spacing 
@@ -282,22 +282,22 @@ let Identifier =
 ///Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
 //Had to name this method pPrimary to avoid conflict with Primary discriminated union
 let rec pPrimary =
-    parse {
+    parser {
         let! id = Identifier
         do! !~ LEFTARROW
         return Primary.Identifier(id) }
     +++ 
-    parse {
+    parser {
         do! ignore OPEN 
         let! exp = Expression
         do! ignore CLOSE 
         return Primary.Expression(exp) }        
     +++ 
-    parse {
+    parser {
         let! lit = Literal
         return Primary.Literal(lit) }        
     +++ 
-    parse {
+    parser {
         let! cls = Class
         return Primary.Class(cls) }
     +++ 
@@ -308,7 +308,7 @@ let rec pPrimary =
 and SequenceItem =
     let prefix = (AND >>$ Prefix.And) +++ (NOT >>$ Prefix.Not)
     let suffix = (QUESTION >>$ Suffix.Question) +++ (STAR >>$ Suffix.Star) +++ (PLUS >>$ Suffix.Plus)
-    parse {
+    parser {
         let! pre = !? prefix
         let! pri = pPrimary
         let! suf = !? suffix
@@ -319,14 +319,14 @@ and Sequence = repeat SequenceItem
     
 ///Expression <- Sequence (SLASH Sequence)*
 and Expression =
-    parse {
+    parser {
         let! s = Sequence
         let! sl = repeat (SLASH >>. Sequence)
         return s::sl }
     
 ///Definition <- Identifier LEFTARROW Expression
 let Definition =
-    parse {
+    parser {
         let! id = Identifier
         do! ignore LEFTARROW 
         let! ex = Expression

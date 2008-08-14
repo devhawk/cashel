@@ -50,7 +50,7 @@ let test_combine_both_fail () =
     
 [<Fact>]
 let test_monad_zero () =
-    let p = parse { if false then return 't' }
+    let p = parser { if false then return 't' }
     p "test" |> should equal None
     
 

@@ -38,7 +38,7 @@ type ParserBuilder() =
     member w.Bind(p, f) = p >>= f
     member w.Combine(p1,p2) = p1 +++ p2
     
-let parse = ParserBuilder()
+let parser = ParserBuilder()
 
 
 

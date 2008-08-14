@@ -1,7 +1,7 @@
 #light
 
 let (!!) str = List.of_seq str
-let chr = Char.chr
+let chr (c:int) = System.Convert.ToChar(c)
 
 open Xunit
 open FsxUnit.Syntax
@@ -357,6 +357,6 @@ Space <- ' ' / '\t' / EndOfLine
 EndOfLine <- '\r\n' / '\n' / '\r'
 EndOfFile <- !." 
 
-    let Some(defs, cl) = peg_grammar |> Grammar
+    let defs, cl = peg_grammar |> Grammar |> Option.get
     defs |> List.length |> should equal 29
     cl |> should equal []
