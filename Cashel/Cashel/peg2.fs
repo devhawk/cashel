@@ -65,6 +65,20 @@ let List2String cl =
 
 let ListFoldString l = l |> List.fold_left (fun s p -> sprintf "%s %O" s p) ""
 
+type StrBuilder = System.Text.StringBuilder
+let append (txt:string) (sb:StrBuilder) = sb.Append(txt)
+let appendChar (c:char) (sb:StrBuilder) = sb.Append(c)
+let appendList l func sb = 
+    l |> List.iter (fun x -> sb |> func x |> ignore)
+    sb
+let appendOption v func sb =
+    match v with
+    | Some(v) -> sb |> func v 
+    | None -> sb
+    
+let tostr o = o.ToString()
+let replace_ws (s:string) = s.Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t")
+
 //---------------------------------------------------------------------------------------------
 //AST Types
 
@@ -72,36 +86,38 @@ type Range =
 | Single of char
 | Dual of char * char
     with
-    override this.ToString() = 
-        match this with
-        | Single x -> sprintf "Range.Single (%c)" x
-        | Dual (x,y) -> sprintf "Range.Dual (%c,%c)" x y
+    override this.ToString() = new StrBuilder() |> Range.BuildString this |> tostr
+    static member BuildString (r:Range) (sb:StrBuilder) = 
+        match r with
+        | Single x -> sb |> appendChar x 
+        | Dual (x,y) -> sb |> appendChar x |> appendChar '-' |> appendChar y 
         
 type Arity =
 | ZeroOrOne
 | ZeroOrMore
 | OneOrMore
     with
-    override this.ToString() = 
-        match this with
-        | ZeroOrOne -> sprintf "Arity.ZeroOrOne" 
-        | ZeroOrMore -> sprintf "Arity.ZeroOrMore"
-        | OneOrMore -> sprintf "Arity.OneOrMore"
+    override this.ToString() = new StrBuilder() |> Arity.BuildString this |> tostr
+    static member BuildString (a:Arity) (sb:StrBuilder) = 
+        match a with
+        | ZeroOrOne -> sb |> appendChar '?' 
+        | ZeroOrMore -> sb |> appendChar '*'
+        | OneOrMore -> sb |> appendChar '+'
         
 type Prefix =
 | SuccessPredicate
 | FailurePredicate
 | Variable of string
     with
-    override this.ToString() = 
-        match this with
-        | SuccessPredicate -> sprintf "Prefix.Success" 
-        | FailurePredicate -> sprintf "Prefix.Failure"
-        | Variable s -> sprintf "Prefix.Var (%s)" s
+    override this.ToString() = new StrBuilder() |> Prefix.BuildString this |> tostr
+    static member BuildString (p:Prefix) (sb:StrBuilder) = 
+        match p with
+        | SuccessPredicate -> sb |> appendChar '&' 
+        | FailurePredicate -> sb |> appendChar '!' 
+        | Variable s -> sb |> append s |> appendChar ':' 
         
 ///Action type not defined yet. Using string as a stub
 type Action = string //TBD
-
 
 ///A Primary can be an Identifier, Production list, 
 type Primary =
@@ -111,14 +127,15 @@ type Primary =
 | Class of Range list
 | Dot 
     with
-    override this.ToString() = 
-        match this with
-        | Identifier s -> sprintf "Primary.Identifier(%s)" s
-        | Production p -> sprintf "Primary.Production %O" p
-        | Literal s -> sprintf "Primary.Literal(\"%s\")" s
-        | Class rl ->  sprintf "Primary.Class(%s)" (ListFoldString rl)
-        | Dot -> sprintf "Primary.Dot"
-
+    override this.ToString() = new StrBuilder() |> Primary.BuildString this |> tostr
+    static member BuildString (p:Primary) (sb:StrBuilder) = 
+        match p with
+        | Identifier s -> sb |> append s
+        | Production p -> sb |> appendChar '(' |> Production.BuildString p |> appendChar ')'
+        | Literal s -> sb |> appendChar '\"' |> append (replace_ws s) |> appendChar '\"'
+        | Class rl ->  sb |> appendChar '[' |> appendList rl Range.BuildString |> appendChar ']'
+        | Dot -> sb |> append "."
+    
 ///A PatternItem is a Primary with an optional prefix and/or optional suffix
 and PatternItem =
     { 
@@ -127,16 +144,11 @@ and PatternItem =
         arity: Arity option;
     }
     with 
-    override this.ToString() = 
-        let sb = new System.Text.StringBuilder("PatternItem (")
-        if Option.is_some this.prefix then 
-            sb.AppendFormat("{0} ", (Option.get this.prefix)) |> ignore
-        sb.Append(this.item) |> ignore
-        if Option.is_some this.arity then 
-            sb.AppendFormat(" {0}", (Option.get this.arity)) |> ignore
-        sb.Append(')') |> ignore
-        sb.ToString()
+    override this.ToString() = new StrBuilder() |> PatternItem.BuildString this |> tostr
+    static member BuildString (p:PatternItem) (sb:StrBuilder) = 
+        sb |> appendOption p.prefix Prefix.BuildString |> Primary.BuildString p.item |> appendOption p.arity Arity.BuildString
         
+    
 ///A Production is a list of Pattern Items and an assoicated optional Action 
 and Production = 
     {
@@ -144,11 +156,9 @@ and Production =
         action: Action option;
     }
     with 
-    override this.ToString() = 
-        let pil = ListFoldString this.pattern
-        if Option.is_some this.action 
-            then sprintf "Production (Pattern: %s, Action: %s)" pil (Option.get this.action)
-            else sprintf "Production (Pattern: %s)" pil 
+    override this.ToString() = new StrBuilder() |> Production.BuildString this |> tostr
+    static member BuildString (prod:Production) (sb:StrBuilder) = 
+        sb |> appendList prod.pattern (fun pi sb -> sb |> PatternItem.BuildString pi |> appendChar ' ') |> appendOption prod.action (fun a sb -> sb |> append "=> " |> append a)
     
 ///A Rule is a named list of Productions (in decending priority choice order)
 type Rule = 
@@ -157,8 +167,16 @@ type Rule =
         productions: Production list;
     }
     with 
-    override this.ToString() = sprintf "Rule \"%s\" (%s)" this.name (ListFoldString this.productions)
+    override this.ToString() = new StrBuilder() |> Rule.BuildString this |> tostr
+    static member BuildString (r:Rule) (sb:StrBuilder) = 
+        let appendProductions sb = 
+            match r.productions with
+            | hd::tl -> 
+                sb |> Production.BuildString hd |> appendList tl (fun p sb -> sb |> append " /\n\t\t" |> Production.BuildString p |> ignore) 
+            | _ -> sb
+        sb |> append "\t" |> append r.name |> append " <- " |> appendProductions |> append ";\n"  
 
+             
 ///A Grammar is a named list of Rules
 type Grammar = 
     {
@@ -166,7 +184,11 @@ type Grammar =
         rules: Rule list;
     }
     with 
-    override this.ToString() = sprintf "Grammar \"%s\" (%s)" this.name (ListFoldString this.rules)
+    override this.ToString() = new StrBuilder() |> Grammar.BuildString this |> tostr
+    static member BuildString (g:Grammar) (sb:StrBuilder) = 
+        sb |> append g.name |> append "\n{\n" |> appendList g.rules Rule.BuildString |> append "\n}\n" 
+
+        
 
     
 //---------------------------------------------------------------------------------------------
@@ -188,6 +210,12 @@ let _Space = parser {
     return! item_equal '\t' |> ignore
     return! _EndOfLine } |> ignore
 
+///SlashComment    <- '//' (!EndOfLine .)* EndOfLine
+let _SlashComment = parser {
+    do! skip_items ['/';'/']
+    do! repeat_until item _EndOfLine |> ignore
+    return () } 
+    
 ///Comment    <- '#' (!EndOfLine .)* EndOfLine
 let _Comment = parser {
     do! skip_item '#' 
@@ -197,6 +225,7 @@ let _Comment = parser {
 ///Spacing    <- (Space / Comment)*
 let _Spacing = ignore (parser {
     return! _Space 
+    return! _SlashComment
     return! _Comment } |> repeat)
 
 let parse p = _Spacing >>. p
