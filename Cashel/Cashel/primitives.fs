@@ -18,8 +18,8 @@ let (.>>) p1 p2 = p1 >>= (fun v -> p2 >>= (fun _ -> result v))
 ///Custom bind operator .>> binds p1 to p2, then returns the parse value of p2
 let (>>.) p1 p2 = p1 >>= (fun _ -> p2 >>= (fun v -> result v))
 
-///ignore tosses the result of parsing function p 
-let ignore p = p >>$ ()
+///forget tosses the result of parsing function p 
+let forget p = p >>$ ()
 
 ///listify turns the result of parsing function p into a single item list
 let listify p = p >>= (fun x -> result [x])
@@ -86,10 +86,10 @@ let rec items_equal l =
     | x::xs -> item_equal x >>= (fun i -> items_equal xs >>= (fun is -> result (i::is)))
 
 ///skip_item calls item_equal but tosses the parse value
-let skip_item v = item_equal v |> ignore
+let skip_item v = item_equal v |> forget
 
 ///skip_items calls items_equal but tosses the parse value
-let skip_items l = items_equal l |> ignore
+let skip_items l = items_equal l |> forget
 
 
 //-------------------------char list primitives-------------------------------------------
@@ -104,4 +104,3 @@ let add_line_and_col cl =
         | [] -> []
     worker cl 1 1 
 
-    

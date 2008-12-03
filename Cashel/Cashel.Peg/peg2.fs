@@ -202,34 +202,34 @@ let _EndOfFile = !~ item
 let _EndOfLine = parser {
     return! items_equal (List.of_seq "\r\n")
     return! item_equal '\n' |> listify
-    return! item_equal '\r' |> listify } |> ignore
+    return! item_equal '\r' |> listify } |> forget
 
 ///Space      <- ' ' / '\t' / EndOfLine
 let _Space = parser {
-    return! item_equal ' ' |> ignore
-    return! item_equal '\t' |> ignore
-    return! _EndOfLine } |> ignore
+    return! item_equal ' ' |> forget
+    return! item_equal '\t' |> forget
+    return! _EndOfLine } |> forget
 
 ///SlashComment    <- '//' (!EndOfLine .)* EndOfLine
 let _SlashComment = parser {
     do! skip_items ['/';'/']
-    do! repeat_until item _EndOfLine |> ignore
+    do! repeat_until item _EndOfLine |> forget
     return () } 
     
 ///Comment    <- '#' (!EndOfLine .)* EndOfLine
 let _Comment = parser {
     do! skip_item '#' 
-    do! repeat_until item _EndOfLine |> ignore
+    do! repeat_until item _EndOfLine |> forget
     return () } 
           
 ///Spacing    <- (Space / Comment)*
-let _Spacing = ignore (parser {
+let _Spacing = forget (parser {
     return! _Space 
     return! _SlashComment
     return! _Comment } |> repeat)
 
 let parse p = _Spacing >>. p
-let token p = ignore (p .>> _Spacing)
+let token p = forget (p .>> _Spacing)
 
 ///DOT        <- '.' Spacing
 let _DOT = token (item_equal '.')
@@ -327,7 +327,7 @@ let _Class =
     parser {
         do! skip_item '['
         let! rl = repeat_until _Range (item_equal ']')
-        do! ignore _Spacing 
+        do! forget _Spacing 
         return rl
     }
            
@@ -337,7 +337,7 @@ let _Literal =
         parser {
             do! skip_item ch
             let! cl = repeat_until _Char (item_equal ch)
-            do! ignore _Spacing 
+            do! forget _Spacing 
             return List2String cl }
     literal_workhorse ''' +++ literal_workhorse '"'
     
@@ -347,7 +347,7 @@ let _Identifier =
     parser {
         let! c = any_of (['_'] @ ['a'..'z'] @ ['A'..'Z'])
         let! cs = repeat (any_of (['_'] @ ['a'..'z'] @ ['A'..'Z'] @ ['0'..'9']))
-        do! ignore _Spacing 
+        do! forget _Spacing 
         return List2String (c::cs) }
 
 //Stub out Action for now    
@@ -361,9 +361,9 @@ let rec _Primary =
         return Identifier(id) }
     +++ 
     parser {
-        do! ignore _OPAREN 
+        do! forget _OPAREN 
         let! prod = _Production
-        do! ignore _CPAREN 
+        do! forget _CPAREN 
         return Production(prod) }        
     +++ 
     parser {
@@ -388,7 +388,7 @@ and _PatternItem =
         +++ 
         parser {
             let! id = _Identifier
-            do! _COLON |> ignore
+            do! _COLON |> forget
             return Variable(id) }
             
     let _Arity = 
@@ -415,16 +415,16 @@ and _Production =
 let _Rule =
     parser {
         let! id = _Identifier
-        do! ignore _LEFTARROW
+        do! forget _LEFTARROW
         let! p = _Production
         let! pl = repeat (_SLASH >>. _Production)
-        do! ignore _SEMICOLON
+        do! forget _SEMICOLON
         return {name=id;productions=p::pl} }
 
 ///Grammar <- Spacing Identifier OCURLY Rule+ CCURLY EndOfFile
 let _Grammar =
     parser {
-        do! ignore _Spacing
+        do! forget _Spacing
         let! id = _Identifier
         do! _OCURLY
         let! rl = repeat1 _Rule

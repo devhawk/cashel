@@ -24,7 +24,7 @@ let test_item_single_item () =
 [<Fact>]
 let test_ignore_with_item () =
     let exp = Some((), !!"est")
-    ignore item !!"test" |> should equal exp 
+    forget item !!"test" |> should equal exp 
 
 [<Fact>]
 let test_listify_with_item () =

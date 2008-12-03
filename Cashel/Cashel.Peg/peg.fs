@@ -251,7 +251,7 @@ let Class =
     parser {
         do! skip_item '['
         let! rl = repeat_until Range (item_equal ']')
-        do! ignore Spacing 
+        do! forget Spacing 
         return rl
     }
            
@@ -260,7 +260,7 @@ let Literal =
     let literal_workhorse ch = parser {
         do! skip_item ch
         let! cl = repeat_until Char (item_equal ch)
-        do! ignore Spacing 
+        do! forget Spacing 
         return cl }
     literal_workhorse ''' +++ literal_workhorse '"'
     
@@ -275,7 +275,7 @@ let Identifier =
     parser {
         let! c = IdentStart
         let! cs = repeat IdentCont 
-        do! ignore Spacing 
+        do! forget Spacing 
         return c::cs }
 
 
@@ -288,9 +288,9 @@ let rec pPrimary =
         return Primary.Identifier(id) }
     +++ 
     parser {
-        do! ignore OPEN 
+        do! forget OPEN 
         let! exp = Expression
-        do! ignore CLOSE 
+        do! forget CLOSE 
         return Primary.Expression(exp) }        
     +++ 
     parser {
@@ -328,7 +328,7 @@ and Expression =
 let Definition =
     parser {
         let! id = Identifier
-        do! ignore LEFTARROW 
+        do! forget LEFTARROW 
         let! ex = Expression
         return {name=id;exp=ex} }
         
