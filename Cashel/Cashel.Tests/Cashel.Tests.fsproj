@@ -62,6 +62,11 @@
     <Compile Include="primitives_test.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cashel.Peg\Cashel.Peg.fsproj">
+      <Name>Cashel.Peg</Name>
+      <Project>{ada1f74d-b036-4756-967c-5e46199732c4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Cashel\Cashel.fsproj">
       <Name>Cashel</Name>
       <Project>{6b89dd99-f2d4-4c0b-9a9a-12ae0028edd1}</Project>

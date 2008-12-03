@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6b89dd99-f2d4-4c0b-9a9a-12ae0028edd1}</ProjectGuid>
+    <ProjectGuid>{ada1f74d-b036-4756-967c-5e46199732c4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Cashel</RootNamespace>
-    <AssemblyName>Cashel</AssemblyName>
+    <RootNamespace>Cashel.Peg</RootNamespace>
+    <AssemblyName>Cashel.Peg</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>Cashel</Name>
+    <Name>Cashel.Peg</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,8 +37,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="parser.fs" />
-    <Compile Include="primitives.fs" />
+    <Compile Include="peg.fs" />
+    <Compile Include="peg2.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cashel\Cashel.fsproj">
+      <Name>Cashel</Name>
+      <Project>{6b89dd99-f2d4-4c0b-9a9a-12ae0028edd1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
