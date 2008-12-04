@@ -173,3 +173,14 @@ let test_skip_items () =
 [<Fact>]
 let test_skip_items_fail () =
     skip_items !!"ts" !!"test" |> should equal None
+    
+[<Fact>]
+let test_space () =
+    let exp = Some (' ', !!" test")
+    space !!"  test" |> should equal exp
+    
+[<Fact>]
+let test_tab () =
+    let exp = Some ('\t', !!" test")
+    space !!"\t test" |> should equal exp
+    

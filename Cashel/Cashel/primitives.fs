@@ -104,3 +104,10 @@ let add_line_and_col cl =
         | [] -> []
     worker cl 1 1 
 
+let lowercase = any_of ['a'..'z']
+let uppercase = any_of ['A'..'Z']
+let letter = lowercase +++ uppercase
+let digit = any_of ['0'..'9']
+let digitval = digit >>= (fun d -> result (int d - int '0'))
+let space = satisfy item (System.Char.IsWhiteSpace)
+let skip_space = repeat space |> forget
