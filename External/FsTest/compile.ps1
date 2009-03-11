@@ -1,1 +1,0 @@
-& 'C:\Program Files\FSharp-1.9.6.0\bin\fsc.exe' -r ..\xunit.dll --target library -o FsTest.dll Syntax.fs

@@ -38,10 +38,11 @@
     <StartArguments>..\Cashel\Cashel.Tests\bin\Debug\Cashel.Tests.dll /wait</StartArguments>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FsTest, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <Name>FsTest</Name>
-      <AssemblyName>FsTest.dll</AssemblyName>
-      <HintPath>..\..\External\FsTest.dll</HintPath>
+    <Reference Include="FsxUnit, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Name>FsxUnit</Name>
+      <AssemblyName>FsxUnit.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External\FsxUnit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
