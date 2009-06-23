@@ -120,10 +120,10 @@ and SequenceItem =
     with 
     override this.ToString() = 
         let sb = new System.Text.StringBuilder("SequenceItem ")
-        if Option.is_some this.itemPrefix then 
+        if Option.isSome this.itemPrefix then 
             sb.AppendFormat("{0} ", (Option.get this.itemPrefix)) |> ignore
         sb.Append(this.primaryItem) |> ignore
-        if Option.is_some this.itemSuffix then 
+        if Option.isSome this.itemSuffix then 
             sb.AppendFormat(" {0}", (Option.get this.itemSuffix)) |> ignore
         sb.ToString()
 
