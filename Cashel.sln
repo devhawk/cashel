@@ -7,6 +7,12 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Tests", "src\Cashel.
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Peg", "src\Cashel.Peg\Cashel.Peg.fsproj", "{ADA1F74D-B036-4756-967C-5E46199732C4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{9FE07BDE-05E7-415A-8D64-04B72E573640}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+		build.fsx = build.fsx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
