@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Users\ryan\dev\cashel\Cashel.nunit" total="116" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2011-01-17" time="21:31:57">
+  <environment nunit-version="2.5.8.10295" clr-version="2.0.50727.4952" os-version="Microsoft Windows NT 6.1.7600.0" platform="Win32NT" cwd="C:\Program Files (x86)\NUnit 2.5.8\bin\net-2.0" machine-name="GONDOR" user="ryan" user-domain="Gondor" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Users\ryan\dev\cashel\Cashel.nunit" executed="True" result="Success" success="True" time="1.864" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Users\ryan\dev\cashel\src\Cashel.Tests\bin\Debug\Cashel.Tests.dll" executed="True" result="Success" success="True" time="1.819" asserts="0">
+        <results>
+          <test-suite type="TestFixture" name="ParserSpecs" executed="True" result="Success" success="True" time="0.565" asserts="0">
+            <results>
+              <test-case name="ParserSpecs.test_bind" executed="True" result="Success" success="True" time="0.471" asserts="1" />
+              <test-case name="ParserSpecs.test_combine_both_fail" executed="True" result="Success" success="True" time="0.017" asserts="1" />
+              <test-case name="ParserSpecs.test_combine_both_work" executed="True" result="Success" success="True" time="0.011" asserts="1" />
+              <test-case name="ParserSpecs.test_combine_first_fails" executed="True" result="Success" success="True" time="0.006" asserts="1" />
+              <test-case name="ParserSpecs.test_combine_second_Fails" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="ParserSpecs.test_monad_zero" executed="True" result="Success" success="True" time="0.014" asserts="1" />
+              <test-case name="ParserSpecs.test_result" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="ParserSpecs.test_zero" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="PegSpecs" executed="True" result="Success" success="True" time="0.957" asserts="0">
+            <results>
+              <test-case name="PegSpecs.test_Char_with_no_slash" executed="True" result="Success" success="True" time="0.244" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash" executed="True" result="Success" success="True" time="0.023" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_onenumber" executed="True" result="Success" success="True" time="0.024" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_onenumber_too_big" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_threenumber" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_threenumbers_too_big" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_twonumber" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_twonumber_followed_by_number" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slash_twonumber_too_big" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slashn" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slashr" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+              <test-case name="PegSpecs.test_Char_with_slasht" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Class_failure" executed="True" result="Success" success="True" time="0.015" asserts="1" />
+              <test-case name="PegSpecs.test_Class_failure_no_end_bracket" executed="True" result="Success" success="True" time="0.055" asserts="1" />
+              <test-case name="PegSpecs.test_Class_multiple" executed="True" result="Success" success="True" time="0.036" asserts="1" />
+              <test-case name="PegSpecs.test_Class_single" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PegSpecs.test_Class_single_range" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Class_single_spacing" executed="True" result="Success" success="True" time="0.009" asserts="1" />
+              <test-case name="PegSpecs.test_Comment" executed="True" result="Success" success="True" time="0.032" asserts="1" />
+              <test-case name="PegSpecs.test_Comment_not_comment" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_dot" executed="True" result="Success" success="True" time="0.008" asserts="1" />
+              <test-case name="PegSpecs.test_dot_fail" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_dot_with_slasht" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PegSpecs.test_dot_with_space" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfFile_with_empty_string" executed="True" result="Success" success="True" time="0.012" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfFile_with_non_empty_string" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfLine_with_no_slash" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfLine_with_slashn" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfLine_with_slashn_slashr" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfLine_with_slashr" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_EndOfLine_with_slashr_slashn" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Identifier" executed="True" result="Success" success="True" time="0.007" asserts="1" />
+              <test-case name="PegSpecs.test_Identifier_fail_start_with_number" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Identifier_start_with_underscore" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_LEFTARROW" executed="True" result="Success" success="True" time="0.007" asserts="1" />
+              <test-case name="PegSpecs.test_LEFTARROW_fail" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_LEFTARROW_with_space" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_Literal_double_quote" executed="True" result="Success" success="True" time="0.009" asserts="1" />
+              <test-case name="PegSpecs.test_Literal_no_end_quote" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Literal_single_quote" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PegSpecs.test_PEG_grammar" executed="True" result="Success" success="True" time="0.165" asserts="2" />
+              <test-case name="PegSpecs.test_Primary_class" executed="True" result="Success" success="True" time="0.008" asserts="1" />
+              <test-case name="PegSpecs.test_Primary_dot" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Primary_expression" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Primary_Identifier" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Primary_Literal" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Range_dual" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PegSpecs.test_Range_dual_fail_back_to_single" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Range_single" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Range_single_fail" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Sequence" executed="True" result="Success" success="True" time="0.006" asserts="1" />
+              <test-case name="PegSpecs.test_SequenceItem" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PegSpecs.test_SequenceItem_prefix_and_suffix" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+              <test-case name="PegSpecs.test_SequenceItem_prefix_only" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PegSpecs.test_SequenceItem_suffix_only" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_SequenceItem_suffix_only_2" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_slash" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PegSpecs.test_slash_fail" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_Space_with_eol" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PegSpecs.test_Space_with_slasht" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Space_with_space" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PegSpecs.test_Spacing_with_comment" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PegSpecs.test_Spacing_with_comment_and_space" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Spacing_with_no_comment" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Spacing_with_space" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PegSpecs.test_Spacing_with_space_and_comment" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="PrimitivesSpecs" executed="True" result="Success" success="True" time="0.273" asserts="0">
+            <results>
+              <test-case name="PrimitivesSpecs.test_any_of_failure_predicate" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_any_of_success_predicate" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_eof" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_eof_fails_not_at_end" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_failure_predicate_parser_fails" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_failure_predicate_parser_success" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_ignore_left" executed="True" result="Success" success="True" time="0.008" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_ignore_left_fails" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_ignore_right" executed="True" result="Success" success="True" time="0.006" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_ignore_right_fails" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_ignore_with_item" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_item" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_item_empty_list" executed="True" result="Success" success="True" time="0.006" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_item_equal" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_item_equal_failure" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_item_single_item" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_items_equal" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_items_equal_failue" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_listify_with_item" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_option_predicate_one" executed="True" result="Success" success="True" time="0.010" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_option_predicate_zero" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_parse_return_value" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_parse_return_value_fails" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat_no_matches" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat_one_match" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat_until" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat_until_fail_1" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat_until_fail_2" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat1" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat1_no_matches" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_repeat1_one_match" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_satisy_failure_predicate" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_satisy_simple_predicate" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_skip_item" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_skip_item_fail" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_skip_items" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_skip_items_fail" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_space" executed="True" result="Success" success="True" time="0.011" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_success_predicate_parser_fails" executed="True" result="Success" success="True" time="0.009" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_Success_predicate_parser_success" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+              <test-case name="PrimitivesSpecs.test_tab" executed="True" result="Success" success="True" time="0.002" asserts="1" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
