@@ -74,6 +74,18 @@ module Parser =
     let! x = p
     return f x }
 
+  let filter p f = parse {
+    let! x = p
+    if f x then return x
+    else return! zero }
+
+  let unfold seed f next =
+    let rec loop curr = parse {
+      if f curr then return curr
+      else return! zero
+      return! loop (next curr) }
+    loop seed
+
   let (<*>) f a = parse {
     let! f' = f
     let! a' = a
