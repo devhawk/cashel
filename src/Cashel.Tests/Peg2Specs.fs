@@ -52,24 +52,24 @@ module Peg2Specs
 //    
 //let (>|>) act exp = 
 //    match exp with
-//    | None ->  act === exp
+//    | None ->  act == exp
 //    | Some(expV, expT) -> 
 //        match act with
 //        | Some(actV, actT) ->
-//            actV === expV
+//            actV == expV
 //            let expT' = new System.String(List.toArray expT)
 //            let actT' = new System.String(List.toArray actT)
-//            actT' === expT'
-//        | _ -> act === exp
+//            actT' == expT'
+//        | _ -> act == exp
 //
 //    
 //[<Test>]
 //let test_eof () = 
-//    _EndOfFile [] === (Some((),[]))
+//    _EndOfFile [] == (Some((),[]))
 //    
 //[<Test>]
 //let test_eof_fails_not_at_end () = 
-//    _EndOfFile !!"test" === None
+//    _EndOfFile !!"test" == None
 //    
 //[<Test>]
 //let test_EndOfLine_with_slashr_slashn () = 

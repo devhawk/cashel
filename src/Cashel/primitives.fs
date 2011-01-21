@@ -32,25 +32,22 @@ module Primitives =
   and repeat1 p = p >>= (fun x -> repeat p >>= (fun xs -> result (x::xs)))
     
   ///Success Predicate    
-  let (!&) f = fun input -> async {
-    let! res = f input
-    return match res with
-           | Some(_) -> Some((),input)
-           | None -> None }
+  let (!&) f = fun input ->
+    match f input with
+    | Some(_) -> Some((),input)
+    | None -> None
     
   ///Failure Predicate
-  let (!~) f = fun input -> async {
-    let! res = f input
-    return match res with
-           | None -> Some((),input)
-           | Some(_) -> None }
+  let (!~) f = fun input ->
+    match f input with
+    | None -> Some((),input)
+    | Some(_) -> None
             
   ///Option Predicate
-  let (!?) f = fun input -> async {
-    let! res = f input
-    return match res with
-           | Some(v,input') -> Some(Some(v),input')
-           | None -> Some(None, input) }
+  let (!?) f = fun input ->
+    match f input with
+    | Some(v,input') -> Some(Some(v),input')
+    | None -> Some(None, input)
     
   ///repeat_until calls p1 repeatedly until p2 succeeds
   let repeat_until p1 p2 =  repeat (!~ p2 >>. p1) .>> p2 
@@ -58,16 +55,16 @@ module Primitives =
     
   //-------------------------List primitives-------------------------------------------
   ///item assumes the input is a list and returns a tuple of the head and tail
-  let item : Parser<'a list, 'a> = fun input -> async {
-    return match input with
-           | x::xs -> Some(x,xs) 
-           | [] -> None }
+  let item : Parser<'a list, 'a> = fun input ->
+    match input with
+    | x::xs -> Some(x,xs) 
+    | [] -> None
             
   ///eof checks that we're at the end of the list being parsed
-  let eof : Parser<'a list, unit> = fun input -> async {
-    return match input with
-            | [] -> Some((), []) 
-            | _ -> None }
+  let eof : Parser<'a list, unit> = fun input ->
+    match input with
+    | [] -> Some((), []) 
+    | _ -> None
             
   ///any_of checks the value at the start of the input is in the list of items l
   let any_of l = satisfy item (fun x -> l |> List.exists (fun y -> x = y))
