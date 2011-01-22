@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="peg.fs" />
-    <Compile Include="peg2.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cashel\Cashel.fsproj">

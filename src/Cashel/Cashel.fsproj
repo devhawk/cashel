@@ -43,8 +43,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="parser.fs" />
-    <Compile Include="primitives.fs" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="ListPrimitives.fs" />
+    <Compile Include="ArraySegmentPrimitives.fs" />
+    <Compile Include="CharParserPrimitives.fs" />
   </ItemGroup>
   <Import Project="..\..\lib\FSharp\Microsoft.FSharp.Targets" />
 </Project>

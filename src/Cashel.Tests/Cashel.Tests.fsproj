@@ -54,9 +54,10 @@
   <ItemGroup>
     <Compile Include="BaseSpecs.fs" />
     <Compile Include="ParserSpecs.fs" />
-    <Compile Include="PrimitivesSpecs.fs" />
+    <Compile Include="ListPrimitivesSpecs.fs" />
+    <Compile Include="ArraySegmentPrimitivesSpecs.fs" />
+    <Compile Include="CharParserPrimitivesSpecs.fs" />
     <Compile Include="PegSpecs.fs" />
-    <Compile Include="Peg2Specs.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cashel.Peg\Cashel.Peg.fsproj">
