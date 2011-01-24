@@ -99,6 +99,9 @@ module Parser =
     
   ///repeat1 looks for one or more instances of the parsing function p
   and repeat1 p = p >>= (fun x -> repeat p >>= (fun xs -> result (x::xs)))
+
+  ///repeat1While looks for one or more instances of the parsing function p while the result of f is true
+  and repeat1While f p = p >>= (fun x -> repeat p >>= (fun xs -> if f xs then result (x::xs) else zero))
     
   ///Success Predicate    
   let (!&) f = fun input ->

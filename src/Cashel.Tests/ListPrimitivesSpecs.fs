@@ -95,7 +95,23 @@ let test_repeat1_one_match() =
 [<Test>]
 let test_repeat1_no_matches () =
     repeat1 (matchToken 'e') !!"ttttest" === None
+
+[<Test>]
+let test_repeat1While () =
+    repeat1While (fun xs -> xs.Length < 4) (matchToken 't') !!"ttttest" === (Some(!!"tttt", !!"est"))
     
+[<Test>]
+let test_repeat1While_one_match() =
+    repeat1While (fun xs -> xs.Length < 4) (matchToken 't') !!"test" === (Some(['t'], !!"est"))
+
+[<Test>]
+let test_repeat1While_no_matches () =
+    repeat1While (fun xs -> xs.Length < 4) (matchToken 'e') !!"ttttest" === None
+
+[<Test>]
+let test_repeat1While_too_many_matches() =
+    repeat1While (fun xs -> xs.Length < 3) (matchToken 't') !!"ttttest" === None
+
 [<Test>]
 let test_failure_predicate_parser_success() =
     !~ (matchToken 't') !!"test" === None
