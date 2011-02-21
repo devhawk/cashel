@@ -4,14 +4,20 @@ open Fake
 open Fake.MSBuild
 
 (* properties *)
-let projectName = "cashel"
-let version = "1.1.0.0"  
+let projectName = "Cashel"
+let version = "1.1.0"  
+let projectSummary = "A simple monadic parser combinator library."
+let projectDescription = "A simple monadic parser combinator library."
+let authors = ["Harry Pierson";"Ryan Riley"]
+let mail = "ryan.riley@panesofglass.org"
+let homepage = "https://github.com/panesofglass/cashel"
 
 (* Directories *)
 let buildDir = "./build/"
 let docsDir = "./docs/" 
 let deployDir = "./deploy/"
 let testDir = "./test/"
+let nugetDir = "./nuget/" 
 
 (* Tools *)
 let nunitPath = "./tools/Nunit"
@@ -42,10 +48,10 @@ Target? BuildApp <-
               {p with
                  CodeLanguage = FSharp;
                  AssemblyVersion = buildVersion;
-                 AssemblyTitle = "cashel";
-                 AssemblyDescription = "A simple monadic parser combinator";
-                 Guid = "5017411A-CF26-4E1A-85D6-1C49470C5996";
-                 OutputFileName = "./src/AssemblyInfo.fs"})                      
+                 AssemblyTitle = projectName;
+                 AssemblyDescription = projectDescription;
+                 Guid = "1e95a279-c2a9-498b-bc72-6e7a0d6854ce";
+                 OutputFileName = "./src/AssemblyInfo.fs"})
 
         appReferences
           |> Seq.map (RemoveTestsFromProject AllNUnitReferences AllSpecAndTestDataFiles)
@@ -70,13 +76,17 @@ Target? Test <-
 
 Target? GenerateDocumentation <-
     fun _ ->
-      !+ (buildDir + "cashel.dll")      
+      !+ (buildDir + "Cashel.dll")      
         |> Scan
         |> Docu (fun p ->
             {p with
                ToolPath = "./tools/FAKE/docu.exe"
                TemplatesPath = "./tools/FAKE/templates"
                OutputPath = docsDir })
+
+Target? CopyLicense <-
+    fun _ ->
+        [ "LICENSE.txt" ] |> CopyTo buildDir
 
 Target? BuildZip <-
     fun _ -> Zip buildDir zipFileName filesToZip
@@ -89,6 +99,21 @@ Target? ZipDocumentation <-
         let zipFileName = deployDir + sprintf "Documentation-%s.zip" version
         Zip docsDir zipFileName docFiles
 
+Target? CreateNuGet <-
+    fun _ ->
+        let nugetDocsDir = nugetDir @@ "docs/"
+        let nugetToolsDir = nugetDir @@ "tools/"
+        
+        XCopy docsDir nugetDocsDir
+        XCopy buildDir nugetToolsDir
+        
+        NuGet (fun p ->
+            {p with
+                Authors = authors
+                Project = projectName
+                Description = projectDescription
+                OutputPath = nugetDir }) "Cashel.nuspec"
+
 Target? Default <- DoNothing
 Target? Deploy <- DoNothing
 
@@ -97,8 +122,9 @@ For? BuildApp <- Dependency? Clean
 For? Test <- Dependency? BuildApp |> And? BuildTest
 For? GenerateDocumentation <- Dependency? BuildApp
 For? ZipDocumentation <- Dependency? GenerateDocumentation
-For? BuildZip <- Dependency? Test
-For? Deploy <- Dependency? ZipDocumentation |> And? BuildZip
+For? BuildZip <- Dependency? BuildApp |> And? CopyLicense
+For? CreateNuGet <- Dependency? Test |> And? BuildZip |> And? ZipDocumentation
+For? Deploy <- Dependency? Test |> And? BuildZip |> And? ZipDocumentation
 For? Default <- Dependency? Deploy
 
 // start build
