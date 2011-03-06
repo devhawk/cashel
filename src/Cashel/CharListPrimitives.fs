@@ -1,6 +1,8 @@
 ﻿namespace Cashel
+
 module CharListPrimitives =
     open Cashel
+    open Cashel.ListPrimitives
 
     //-------------------------char list primitives-------------------------------------------
     
@@ -19,5 +21,5 @@ module CharListPrimitives =
     let letter = lowercase +++ uppercase
     let digit = any ['0'..'9']
     let digitval = digit >>= (fun d -> result (int d - int '0'))
-    let space = satisfy token (System.Char.IsWhiteSpace)
+    let space = filter token (System.Char.IsWhiteSpace)
     let skipSpace = repeat space |> forget

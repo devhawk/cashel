@@ -6,6 +6,7 @@ open NUnit.Framework
 open FsUnit
 
 open Cashel
+open Cashel.ListPrimitives
 
 [<Test>]
 let test_token () =
@@ -32,17 +33,14 @@ let test_listify_with_token () =
     listify token !!"test" |> should equal exp   
     
 [<Test>]
-let test_satisy_simple_predicate () =
+let test_filter_simple_predicate () =
     let exp = Some('t', !!"est")
-    satisfy token (fun x -> x = 't') !!"test" |> should equal exp
+    filter token (fun x -> x = 't') !!"test" |> should equal exp
 
 [<Test>]
-let test_satisy_failure_predicate () =
-    satisfy token (fun x -> x = 'e') !!"test" |> should equal None
+let test_filter_failure_predicate () =
+    filter token (fun x -> x = 'e') !!"test" |> should equal None
     
-
-open Cashel.ListPrimitives
-
 [<Test>]
 let test_any_success_predicate () =
     any ['q'..'v'] !!"test" |> should equal (Some('t', !!"est"))

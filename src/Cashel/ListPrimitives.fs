@@ -1,6 +1,5 @@
 ﻿namespace Cashel
 
-[<AutoOpen>]
 module ListPrimitives =
     open Cashel
 
@@ -20,10 +19,10 @@ module ListPrimitives =
             | _ -> None
             
     ///any checks the value at the start of the input is in the list of tokens l
-    let any l = satisfy token (fun x -> l |> List.exists (fun y -> x = y))
+    let any l = filter token (fun x -> l |> List.exists (fun y -> x = y))
     
     ///matchToken checks the value at the start of the input matches the value v
-    let matchToken v = satisfy token (fun x -> x = v)
+    let matchToken v = filter token (fun x -> x = v)
     
     ///matchTokens recursively uses matchToken to check to see if a list of values l matches the start of the input
     let rec matchTokens l = 
