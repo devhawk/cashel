@@ -54,7 +54,6 @@ Target? BuildApp <-
                  OutputFileName = "./src/AssemblyInfo.fs"})
 
         appReferences
-          |> Seq.map (RemoveTestsFromProject AllNUnitReferences AllSpecAndTestDataFiles)
           |> MSBuildRelease buildDir "Build"
           |> Log "AppBuild-Output: "
 
