@@ -14,10 +14,10 @@ module CharListPrimitives =
             | [] -> []
         worker cl 1 1 
     
-    let lowercase = anyOf ['a'..'z']
-    let uppercase = anyOf ['A'..'Z']
+    let lowercase = any ['a'..'z']
+    let uppercase = any ['A'..'Z']
     let letter = lowercase +++ uppercase
-    let digit = anyOf ['0'..'9']
+    let digit = any ['0'..'9']
     let digitval = digit >>= (fun d -> result (int d - int '0'))
-    let space = satisfy item (System.Char.IsWhiteSpace)
+    let space = satisfy token (System.Char.IsWhiteSpace)
     let skipSpace = repeat space |> forget

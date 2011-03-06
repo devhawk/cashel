@@ -8,64 +8,64 @@ open FsUnit
 open Cashel
 
 [<Test>]
-let test_item () =
+let test_token () =
     let exp = Some('t', !!"est")
-    item !!"test" |> should equal exp
+    token !!"test" |> should equal exp
     
 [<Test>]
-let test_item_empty_list () =
-    item [] |> should equal None
+let test_token_empty_list () =
+    token [] |> should equal None
 
 [<Test>]
-let test_item_single_item () =
+let test_token_single_token () =
     let exp = Some('t', [])
-    item ['t'] |> should equal exp
+    token ['t'] |> should equal exp
 
 [<Test>]
-let test_ignore_with_item () =
+let test_ignore_with_token () =
     let exp = Some((), !!"est")
-    forget item !!"test" |> should equal exp 
+    forget token !!"test" |> should equal exp 
 
 [<Test>]
-let test_listify_with_item () =
+let test_listify_with_token () =
     let exp = Some(['t'], !!"est")
-    listify item !!"test" |> should equal exp   
+    listify token !!"test" |> should equal exp   
     
 [<Test>]
 let test_satisy_simple_predicate () =
     let exp = Some('t', !!"est")
-    satisfy item (fun x -> x = 't') !!"test" |> should equal exp
+    satisfy token (fun x -> x = 't') !!"test" |> should equal exp
 
 [<Test>]
 let test_satisy_failure_predicate () =
-    satisfy item (fun x -> x = 'e') !!"test" |> should equal None
+    satisfy token (fun x -> x = 'e') !!"test" |> should equal None
     
 
 open Cashel.ListPrimitives
 
 [<Test>]
-let test_anyOf_success_predicate () =
-    anyOf ['q'..'v'] !!"test" |> should equal (Some('t', !!"est"))
+let test_any_success_predicate () =
+    any ['q'..'v'] !!"test" |> should equal (Some('t', !!"est"))
     
 [<Test>]
-let test_anyOf_failure_predicate () =
-    anyOf ['a'..'e'] !!"test" |> should equal None
+let test_any_failure_predicate () =
+    any ['a'..'e'] !!"test" |> should equal None
     
 [<Test>]
-let test_itemEqual () =
-    itemEqual 't' !!"test" |> should equal (Some('t', !!"est"))
+let test_matchToken () =
+    matchToken 't' !!"test" |> should equal (Some('t', !!"est"))
 
 [<Test>]
-let test_itemEqual_failure () =
-    itemEqual 'e' !!"test" |> should equal None
+let test_matchToken_failure () =
+    matchToken 'e' !!"test" |> should equal None
     
 [<Test>]
-let test_itemsEqual () =
-    itemsEqual !!"test" !!"test me" |> should equal (Some(!!"test", !!" me"))
+let test_matchTokens () =
+    matchTokens !!"test" !!"test me" |> should equal (Some(!!"test", !!" me"))
 
 [<Test>]
-let test_itemsEqual_failue () =
-    itemsEqual !!"test" !!"tesp me" |> should equal None
+let test_matchTokens_failue () =
+    matchTokens !!"test" !!"tesp me" |> should equal None
     
 [<Test>]
 let test_eof () = 
@@ -77,105 +77,105 @@ let test_eof_fails_not_at_end () =
     
 [<Test>]
 let test_repeat () =
-    repeat (itemEqual 't') !!"ttttest" |> should equal (Some(!!"tttt", !!"est"))
+    repeat (matchToken 't') !!"ttttest" |> should equal (Some(!!"tttt", !!"est"))
 
 [<Test>]
 let test_repeat_one_match() =
-    repeat (itemEqual 't') !!"test" |> should equal (Some(['t'], !!"est"))
+    repeat (matchToken 't') !!"test" |> should equal (Some(['t'], !!"est"))
     
 [<Test>]
 let test_repeat_no_matches () =
-    repeat (itemEqual 'e') !!"ttttest" |> should equal (Some([], !!"ttttest"))
+    repeat (matchToken 'e') !!"ttttest" |> should equal (Some([], !!"ttttest"))
 
 [<Test>]
 let test_repeat1 () =
-    repeat1 (itemEqual 't') !!"ttttest" |> should equal (Some(!!"tttt", !!"est"))
+    repeat1 (matchToken 't') !!"ttttest" |> should equal (Some(!!"tttt", !!"est"))
     
 [<Test>]
 let test_repeat1_one_match() =
-    repeat1 (itemEqual 't') !!"test" |> should equal (Some(['t'], !!"est"))
+    repeat1 (matchToken 't') !!"test" |> should equal (Some(['t'], !!"est"))
 
 [<Test>]
 let test_repeat1_no_matches () =
-    repeat1 (itemEqual 'e') !!"ttttest" |> should equal None
+    repeat1 (matchToken 'e') !!"ttttest" |> should equal None
     
 [<Test>]
 let test_failure_predicate_parser_success() =
-    !~ (itemEqual 't') !!"test" |> should equal None
+    !~ (matchToken 't') !!"test" |> should equal None
 
 [<Test>]
 let test_failure_predicate_parser_fails () =
-    !~ (itemEqual 'e') !!"test" |> should equal (Some((), !!"test"))
+    !~ (matchToken 'e') !!"test" |> should equal (Some((), !!"test"))
     
 [<Test>]
 let test_Success_predicate_parser_success() =
-    !& (itemEqual 't') !!"test" |> should equal (Some((), !!"test"))
+    !& (matchToken 't') !!"test" |> should equal (Some((), !!"test"))
 
 [<Test>]
 let test_success_predicate_parser_fails () =
-    !& (itemEqual 'e') !!"test" |> should equal None
+    !& (matchToken 'e') !!"test" |> should equal None
     
 [<Test>]
 let test_option_predicate_one () =
-    !? (itemEqual 't') !!"test" |> should equal (Some(Some('t'), !!"est"))
+    !? (matchToken 't') !!"test" |> should equal (Some(Some('t'), !!"est"))
 
 [<Test>]
 let test_option_predicate_zero () =
-    !? (itemEqual 'e') !!"test" |> should equal (Some(None, !!"test"))
+    !? (matchToken 'e') !!"test" |> should equal (Some(None, !!"test"))
 
 [<Test>]
 let test_ignore_left () =
-    ((itemEqual 't') .>> (itemEqual 'e')) !!"test" |> should equal (Some('t', !!"st"))
+    ((matchToken 't') .>> (matchToken 'e')) !!"test" |> should equal (Some('t', !!"st"))
 
 [<Test>]
 let test_ignore_left_fails () =
-    ((itemEqual 'e') .>> (itemEqual 'e')) !!"test" |> should equal None
+    ((matchToken 'e') .>> (matchToken 'e')) !!"test" |> should equal None
 
 [<Test>]
 let test_ignore_right () =
-    ((itemEqual 't') >>. (itemEqual 'e')) !!"test" |> should equal (Some('e', !!"st"))
+    ((matchToken 't') >>. (matchToken 'e')) !!"test" |> should equal (Some('e', !!"st"))
 
 [<Test>]
 let test_ignore_right_fails () =
-    ((itemEqual 't') >>. (itemEqual 's')) !!"test" |> should equal None
+    ((matchToken 't') >>. (matchToken 's')) !!"test" |> should equal None
 
 [<Test>]
 let test_parse_return_value () =
-    ((itemEqual 't') >>! "hello") !!"test" |> should equal (Some("hello", !!"est"))
+    ((matchToken 't') >>! "hello") !!"test" |> should equal (Some("hello", !!"est"))
 
 [<Test>]
 let test_parse_return_value_fails () =
-    ((itemEqual 'q') >>! "hello") !!"test" |> should equal None
+    ((matchToken 'q') >>! "hello") !!"test" |> should equal None
     
 [<Test>]
-let test_repeatUntil () =
-    (repeatUntil item (itemEqual 's')) !!"test" |> should equal (Some(!!"te", !!"t"))
+let test_until () =
+    (until token (matchToken 's')) !!"test" |> should equal (Some(!!"te", !!"t"))
     
 [<Test>]
-let test_repeatUntil_fail_1 () =
-    (repeatUntil item (itemEqual 'q')) !!"test" |> should equal None
+let test_until_fail_1 () =
+    (until token (matchToken 'q')) !!"test" |> should equal None
 
 [<Test>]
-let test_repeatUntil_fail_2 () =
-    (repeatUntil (itemEqual 'q') (itemEqual 's')) !!"test" |> should equal None
+let test_until_fail_2 () =
+    (until (matchToken 'q') (matchToken 's')) !!"test" |> should equal None
     
 [<Test>]
-let test_skipItem () =
+let test_skip () =
     let exp = Some((), !!"est")
-    skipItem 't' !!"test" |> should equal exp
+    skip 't' !!"test" |> should equal exp
 
 [<Test>]
-let test_skipItem_fail () =
-    skipItem 'e' !!"test" |> should equal None
+let test_skip_fail () =
+    skip 'e' !!"test" |> should equal None
     
 [<Test>]
-let test_skipItems () =
+let test_skips () =
     let exp = Some((), !!"st")
-    skipItems !!"te" !!"test" |> should equal exp
+    skips !!"te" !!"test" |> should equal exp
 
 [<Test>]
-let test_skipItems_fail () =
-    skipItems !!"ts" !!"test" |> should equal None
+let test_skips_fail () =
+    skips !!"ts" !!"test" |> should equal None
     
 
 open Cashel.CharListPrimitives

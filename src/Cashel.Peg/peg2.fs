@@ -196,30 +196,30 @@ module Peg2 =
     open Cashel
     open Cashel.ListPrimitives
             
-    let _EndOfFile = !~ item
+    let _EndOfFile = !~ token
     
     ///EndOfLine  <- '\r\n' / '\n' / '\r'
     let _EndOfLine = parser {
-        return! itemsEqual (List.ofSeq "\r\n")
-        return! itemEqual '\n' |> listify
-        return! itemEqual '\r' |> listify } |> forget
+        return! matchTokens (List.ofSeq "\r\n")
+        return! matchToken '\n' |> listify
+        return! matchToken '\r' |> listify } |> forget
     
     ///Space      <- ' ' / '\t' / EndOfLine
     let _Space = parser {
-        return! itemEqual ' ' |> forget
-        return! itemEqual '\t' |> forget
+        return! matchToken ' ' |> forget
+        return! matchToken '\t' |> forget
         return! _EndOfLine } |> forget
     
     ///SlashComment    <- '//' (!EndOfLine .)* EndOfLine
     let _SlashComment = parser {
-        do! skipItems ['/';'/']
-        do! repeatUntil item _EndOfLine |> forget
+        do! skips ['/';'/']
+        do! until token _EndOfLine |> forget
         return () } 
         
     ///Comment    <- '#' (!EndOfLine .)* EndOfLine
     let _Comment = parser {
-        do! skipItem '#' 
-        do! repeatUntil item _EndOfLine |> forget
+        do! skip '#' 
+        do! until token _EndOfLine |> forget
         return () } 
               
     ///Spacing    <- (Space / Comment)*
@@ -229,58 +229,58 @@ module Peg2 =
         return! _Comment } |> repeat)
     
     let parse p = _Spacing >>. p
-    let token p = forget (p .>> _Spacing)
+    let forgottenToken p = forget (p .>> _Spacing)
     
     ///DOT        <- '.' Spacing
-    let _DOT = token (itemEqual '.')
+    let _DOT = forgottenToken (matchToken '.')
     
     ///OPEN       <- '(' Spacing
-    let _OPAREN = token (itemEqual '(')
+    let _OPAREN = forgottenToken (matchToken '(')
     
     ///CLOSE      <- ')' Spacing
-    let _CPAREN = token (itemEqual ')')
+    let _CPAREN = forgottenToken (matchToken ')')
     
     ///AND        <- '&' Spacing
-    let _AND = token (itemEqual '&')
+    let _AND = forgottenToken (matchToken '&')
     
     ///NOT        <- '!' Spacing
-    let _NOT = token (itemEqual '!')
+    let _NOT = forgottenToken (matchToken '!')
     
     ///QUESTION   <- '?' Spacing
-    let _QUESTION = token (itemEqual '?')
+    let _QUESTION = forgottenToken (matchToken '?')
     
     ///STAR       <- '*' Spacing
-    let _STAR = token (itemEqual '*')
+    let _STAR = forgottenToken (matchToken '*')
     
     ///PLUS       <- '+' Spacing
-    let _PLUS = token (itemEqual '+')
+    let _PLUS = forgottenToken (matchToken '+')
     
     ///COLON       <- ':' Spacing
-    let _COLON = token (itemEqual ':')
+    let _COLON = forgottenToken (matchToken ':')
     
     ///SEMICOLON       <- ';' Spacing
-    let _SEMICOLON = token (itemEqual ';')
+    let _SEMICOLON = forgottenToken (matchToken ';')
     
     ///RIGHTARROW  <- '=>' Spacing
-    let _RIGHTARROW = token (itemsEqual (List.ofSeq "=>"))
+    let _RIGHTARROW = forgottenToken (matchTokens (List.ofSeq "=>"))
     
     ///SLASH      <- '/' Spacing
-    let _SLASH = token (itemEqual '/')
+    let _SLASH = forgottenToken (matchToken '/')
     
     ///OPEN       <- '(' Spacing
-    let _OCURLY = token (itemEqual '{')
+    let _OCURLY = forgottenToken (matchToken '{')
     
     ///CLOSE      <- ')' Spacing
-    let _CCURLY = token (itemEqual '}')
+    let _CCURLY = forgottenToken (matchToken '}')
     
     ///LEFTARROW  <- '<-' Spacing
-    let _LEFTARROW = token (itemsEqual (List.ofSeq "<-"))
+    let _LEFTARROW = forgottenToken (matchTokens (List.ofSeq "<-"))
     
     
     ///Char <- '\\' [nrt'""\[\]\\] / '\\u' [a-fA-F0-9] [a-fA-F0-9] [a-fA-F0-9] [a-fA-F0-9] / !'\\' .
     let _Char = 
         ///HexDigit <- [a-fA-F0-9]
-        let _HexDigit = anyOf (['a'..'f'] @ ['A'..'F'] @  ['0'..'9'])
+        let _HexDigit = any (['a'..'f'] @ ['A'..'F'] @  ['0'..'9'])
     
         let hex2int c = 
             let c = System.Char.ToUpper(c)
@@ -289,8 +289,8 @@ module Peg2 =
             else failwith "Invalid Hex Digit"
         
         parser {
-            do! skipItem '\\' 
-            let! c = anyOf ['n';'r';'t';'''; '"'; '['; ']'; '\\']
+            do! skip '\\' 
+            let! c = any ['n';'r';'t';'''; '"'; '['; ']'; '\\']
             match c with
             | 'n' -> return '\n'
             | 'r' -> return '\r'
@@ -298,8 +298,8 @@ module Peg2 =
             | _ -> return c } 
         +++
         parser {        
-            do! skipItem '\\' 
-            do! skipItem 'u' 
+            do! skip '\\' 
+            do! skip 'u' 
             let! h1 = _HexDigit
             let! h2 = _HexDigit
             let! h3 = _HexDigit
@@ -307,14 +307,14 @@ module Peg2 =
             return char ((hex2int h1)*4096 + (hex2int h2)*256 + (hex2int h3)*16 + (hex2int h4)) }
         +++ 
         parser {
-            do! !~ (itemEqual '\\')
-            return! item }
+            do! !~ (matchToken '\\')
+            return! token }
         
     ///Range      <- Char '-' Char / Char
     let _Range =
         parser {
             let! c1 = _Char
-            do! skipItem '-' 
+            do! skip '-' 
             let! c2 = _Char
             return Dual(c1, c2) }
         +++
@@ -325,8 +325,8 @@ module Peg2 =
     ///Class      <- '[' (!']' Range)* ']' Spacing
     let _Class =
         parser {
-            do! skipItem '['
-            let! rl = repeatUntil _Range (itemEqual ']')
+            do! skip '['
+            let! rl = until _Range (matchToken ']')
             do! forget _Spacing 
             return rl
         }
@@ -335,8 +335,8 @@ module Peg2 =
     let _Literal =
         let literalWorkhorse ch = 
             parser {
-                do! skipItem ch
-                let! cl = repeatUntil _Char (itemEqual ch)
+                do! skip ch
+                let! cl = until _Char (matchToken ch)
                 do! forget _Spacing 
                 return List2String cl }
         literalWorkhorse ''' +++ literalWorkhorse '"'
@@ -345,8 +345,8 @@ module Peg2 =
     ///Identifier <- [a-zA-Z_] ([_a-zA-Z0-9])* Spacing
     let _Identifier =
         parser {
-            let! c = anyOf (['_'] @ ['a'..'z'] @ ['A'..'Z'])
-            let! cs = repeat (anyOf (['_'] @ ['a'..'z'] @ ['A'..'Z'] @ ['0'..'9']))
+            let! c = any (['_'] @ ['a'..'z'] @ ['A'..'Z'])
+            let! cs = repeat (any (['_'] @ ['a'..'z'] @ ['A'..'Z'] @ ['0'..'9']))
             do! forget _Spacing 
             return List2String (c::cs) }
     

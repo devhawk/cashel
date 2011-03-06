@@ -52,6 +52,6 @@ module Primitives =
             | Some(v,input') -> Some(Some(v),input')
             | None -> Some(None, input)
     
-    ///repeatUntil calls p1 repeatedly until p2 succeeds
-    let repeatUntil p1 p2 =  repeat (!~ p2 >>. p1) .>> p2 
+    ///until calls p1 repeatedly until p2 succeeds
+    let until p1 p2 =  repeat (!~ p2 >>. p1) .>> p2 
         

@@ -5,8 +5,8 @@ module ListPrimitives =
     open Cashel
 
     //-------------------------List primitives-------------------------------------------
-    ///item assumes the input is a list and returns a tuple of the head and tail
-    let item : Parser<'a list, 'a> = 
+    ///token assumes the input is a list and returns a tuple of the head and tail
+    let token : Parser<'a list, 'a> = 
         fun input ->
             match input with
             | x::xs -> Some(x,xs) 
@@ -19,20 +19,20 @@ module ListPrimitives =
             | [] -> Some((), []) 
             | _ -> None
             
-    ///anyOf checks the value at the start of the input is in the list of items l
-    let anyOf l = satisfy item (fun x -> l |> List.exists (fun y -> x = y))
+    ///any checks the value at the start of the input is in the list of tokens l
+    let any l = satisfy token (fun x -> l |> List.exists (fun y -> x = y))
     
-    ///itemEqual checks the value at the start of the input matches the value v
-    let itemEqual v = satisfy item (fun x -> x = v)
+    ///matchToken checks the value at the start of the input matches the value v
+    let matchToken v = satisfy token (fun x -> x = v)
     
-    ///itemsEqual recursively uses itemEqual to check to see if a list of values l matches the start of the input
-    let rec itemsEqual l = 
+    ///matchTokens recursively uses matchToken to check to see if a list of values l matches the start of the input
+    let rec matchTokens l = 
         match l with
         | [] -> result []
-        | x::xs -> itemEqual x >>= (fun i -> itemsEqual xs >>= (fun is -> result (i::is)))
+        | x::xs -> matchToken x >>= (fun i -> matchTokens xs >>= (fun is -> result (i::is)))
     
-    ///skipItem calls itemEqual but tosses the parse value
-    let skipItem v = itemEqual v |> forget
+    ///skip calls matchToken but tosses the parse value
+    let skip v = matchToken v |> forget
     
-    ///skipItems calls itemsEqual but tosses the parse value
-    let skipItems l = itemsEqual l |> forget
+    ///skips calls matchTokens but tosses the parse value
+    let skips l = matchTokens l |> forget

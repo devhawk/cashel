@@ -150,20 +150,20 @@ module Peg =
             
     ///EndOfLine  <- '\r\n' / '\n' / '\r'
     let EndOfLine = parser {
-        return! itemsEqual (List.ofSeq "\r\n")
-        return! itemEqual '\n' |> listify
-        return! itemEqual '\r' |> listify }
+        return! matchTokens (List.ofSeq "\r\n")
+        return! matchToken '\n' |> listify
+        return! matchToken '\r' |> listify }
     
     ///Space      <- ' ' / '\t' / EndOfLine
     let Space = parser {
-        return! itemEqual ' ' |> listify
-        return! itemEqual '\t' |> listify
+        return! matchToken ' ' |> listify
+        return! matchToken '\t' |> listify
         return! EndOfLine }
     
     ///Comment    <- '#' (!EndOfLine .)* EndOfLine
     let Comment = parser {
-        do! skipItem '#' 
-        let! c = repeatUntil item EndOfLine
+        do! skip '#' 
+        let! c = until token EndOfLine
         return c }
               
     ///Spacing    <- (Space / Comment)*
@@ -172,42 +172,42 @@ module Peg =
         return! Comment } |> repeat
     
     ///DOT        <- '.' Spacing
-    let DOT = itemEqual '.' .>> Spacing
+    let DOT = matchToken '.' .>> Spacing
     
     ///SLASH      <- '/' Spacing
-    let SLASH = itemEqual '/' .>> Spacing
+    let SLASH = matchToken '/' .>> Spacing
     
     ///AND        <- '&' Spacing
-    let AND = itemEqual '&' .>> Spacing
+    let AND = matchToken '&' .>> Spacing
     
     ///NOT        <- '!' Spacing
-    let NOT = itemEqual '!' .>> Spacing
+    let NOT = matchToken '!' .>> Spacing
     
     ///QUESTION   <- '?' Spacing
-    let QUESTION = itemEqual '?' .>> Spacing
+    let QUESTION = matchToken '?' .>> Spacing
     
     ///STAR       <- '*' Spacing
-    let STAR = itemEqual '*' .>> Spacing
+    let STAR = matchToken '*' .>> Spacing
     
     ///PLUS       <- '+' Spacing
-    let PLUS = itemEqual '+' .>> Spacing
+    let PLUS = matchToken '+' .>> Spacing
     
     ///OPEN       <- '(' Spacing
-    let OPEN = itemEqual '(' .>> Spacing
+    let OPEN = matchToken '(' .>> Spacing
     
     ///CLOSE      <- ')' Spacing
-    let CLOSE = itemEqual ')' .>> Spacing
+    let CLOSE = matchToken ')' .>> Spacing
     
     ///LEFTARROW  <- '<-' Spacing
-    let LEFTARROW = itemsEqual (List.ofSeq "<-") .>> Spacing
+    let LEFTARROW = matchTokens (List.ofSeq "<-") .>> Spacing
     
     ///Char <- '\\' [nrt'""\[\]\\] / '\\' [0-2][0-7][0-7] / '\\' [0-7][0-7]? / !'\\' .
     let Char = 
         let c2i c = int c - int '0'
         
         parser {
-            do! skipItem '\\' 
-            let! c = anyOf ['n';'r';'t';'''; '"'; '['; ']'; '\\']
+            do! skip '\\' 
+            let! c = any ['n';'r';'t';'''; '"'; '['; ']'; '\\']
             match c with
             | 'n' -> return '\n'
             | 'r' -> return '\r'
@@ -215,29 +215,29 @@ module Peg =
             | _ -> return c } 
         +++
         parser {        
-            do! skipItem '\\' 
-            let! c1 = anyOf ['0'..'2'] 
-            let! c2 = anyOf ['0'..'7']
-            let! c3 = anyOf ['0'..'7']
+            do! skip '\\' 
+            let! c1 = any ['0'..'2'] 
+            let! c2 = any ['0'..'7']
+            let! c3 = any ['0'..'7']
             return char ((c2i c1)*64 + (c2i c2)*8 + (c2i c3)) }
         +++
         parser {        
-            do! skipItem '\\' 
-            let! c1 = anyOf ['0'..'7']
-            let! c2 = !? (anyOf ['0'..'7'])
+            do! skip '\\' 
+            let! c1 = any ['0'..'7']
+            let! c2 = !? (any ['0'..'7'])
             match c2 with
             | Some(c2) -> return char ((c2i c1)*8 + (c2i c2))
             | None -> return char (c2i c1) } 
         +++ 
         parser {
-            do! !~ (itemEqual '\\')
-            return! item }
+            do! !~ (matchToken '\\')
+            return! token }
         
     ///Range      <- Char '-' Char / Char
     let Range =
         parser {
             let! c1 = Char
-            do! skipItem '-' 
+            do! skip '-' 
             let! c2 = Char
             return Dual(c1, c2) }
         +++
@@ -248,8 +248,8 @@ module Peg =
     ///Class      <- '[' (!']' Range)* ']' Spacing
     let Class =
         parser {
-            do! skipItem '['
-            let! rl = repeatUntil Range (itemEqual ']')
+            do! skip '['
+            let! rl = until Range (matchToken ']')
             do! forget Spacing 
             return rl
         }
@@ -257,8 +257,8 @@ module Peg =
     ///Literal    <- ['] (!['] Char)* ['] Spacing / ["] (!["] Char)* [""] Spacing    
     let Literal =
         let literal_workhorse ch = parser {
-            do! skipItem ch
-            let! cl = repeatUntil Char (itemEqual ch)
+            do! skip ch
+            let! cl = until Char (matchToken ch)
             do! forget Spacing 
             return cl }
         literal_workhorse ''' +++ literal_workhorse '"'
@@ -268,8 +268,8 @@ module Peg =
     //IdentStart <- [a-zA-Z_]
     //IdentCont  <- IdentStart / [0-9]            
     let Identifier =
-        let IdentStart = anyOf (['a'..'z']@['A'..'Z']@['_'])
-        let IdentCont = IdentStart +++ anyOf ['0'..'9']
+        let IdentStart = any (['a'..'z']@['A'..'Z']@['_'])
+        let IdentCont = IdentStart +++ any ['0'..'9']
     
         parser {
             let! c = IdentStart
