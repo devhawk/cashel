@@ -252,11 +252,11 @@ let test_Identifier_fail_start_with_number () =
     
 [<Test>]
 let test_Primary_Identifier () =
-    pPrimary !!"test me" |> should equal (Some(Identifier(!!"test"), !!"me"))
+    pPrimary !!"test me" |> should equal (Some(Primary.Identifier(!!"test"), !!"me"))
 
 [<Test>]
 let test_Primary_Literal () =
-    pPrimary !!"'test' me" |> should equal (Some(Literal(!!"test"), !!"me"))
+    pPrimary !!"'test' me" |> should equal (Some(Primary.Literal(!!"test"), !!"me"))
     
 [<Test>]
 let test_Primary_expression () =
