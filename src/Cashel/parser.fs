@@ -38,4 +38,21 @@ module Parser =
         member w.Combine(p1,p2) = p1 +++ p2
         
     let parser = ParserBuilder()
+  
+    ///map applies the function f to the results of the parser p
+    let map p f = p >>= (fun x -> result (f x))
+         
+    ///filter checks the value returned from item against the predicate function f
+    let filter p f = p >>= (fun x -> if f x then result x else zero)
+   
+    ///unfold generates a parser from the inital seed value filter f and a function to get the next value
+    let unfold seed f next =
+        let rec loop curr = parser {
+            if f curr then return curr
+            else return! zero
+            return! loop (next curr) }
+        loop seed
     
+    ///pure applicative functor
+    let (<*>) f a = f >>= (fun f' -> a >>= (fun a' -> result (f' a')))
+   

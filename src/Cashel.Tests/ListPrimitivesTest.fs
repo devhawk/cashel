@@ -1,4 +1,4 @@
-module PrimitivesTest
+module ListPrimitivesTest
 
 let (!!) str = List.ofSeq str
 
@@ -20,7 +20,7 @@ let test_token_empty_list () =
 [<Test>]
 let test_token_single_token () =
     let exp = Some('t', [])
-    token ['t'] |> should equal exp
+    token ['t'] = exp |> should be True
 
 [<Test>]
 let test_ignore_with_token () =
@@ -83,7 +83,7 @@ let test_repeat_one_match() =
     
 [<Test>]
 let test_repeat_no_matches () =
-    repeat (matchToken 'e') !!"ttttest" |> should equal (Some([], !!"ttttest"))
+    repeat (matchToken 'e') !!"ttttest" = (Some([], !!"ttttest")) |> should be True
 
 [<Test>]
 let test_repeat1 () =
@@ -119,7 +119,7 @@ let test_option_predicate_one () =
 
 [<Test>]
 let test_option_predicate_zero () =
-    !? (matchToken 'e') !!"test" |> should equal (Some(None, !!"test"))
+    !? (matchToken 'e') !!"test" = (Some(None, !!"test")) |> should be True
 
 [<Test>]
 let test_ignore_left () =

@@ -48,6 +48,7 @@
     <Compile Include="primitives.fs" />
     <Compile Include="ListPrimitives.fs" />
     <Compile Include="CharListPrimitives.fs" />
+    <Compile Include="ArraySegmentPrimitives.fs" />
   </ItemGroup>
   <Import Project="..\..\lib\FSharp\Microsoft.FSharp.Targets" />
 </Project>

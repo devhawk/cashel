@@ -66,7 +66,7 @@ let (>|>) act exp =
     
 [<Test>]
 let test_eof () = 
-    _EndOfFile [] |> should equal (Some((),[]))
+    _EndOfFile [] = (Some((),[]))|> should be True
     
 [<Test>]
 let test_eof_fails_not_at_end () = 

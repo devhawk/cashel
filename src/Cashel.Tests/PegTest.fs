@@ -68,7 +68,7 @@ let test_Comment_not_comment () =
 
 [<Test>]
 let test_Spacing_with_no_comment () = 
-    Spacing !!"test comment\r\nmore text" |> should equal (Some([], !!"test comment\r\nmore text"))
+    Spacing !!"test comment\r\nmore text" = (Some([], !!"test comment\r\nmore text")) |> should be True
 
 [<Test>]
 let test_Spacing_with_comment () = 

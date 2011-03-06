@@ -6,7 +6,7 @@ module Primitives =
 
     //-------------------------Basic primitives----------------------------------------------------
     //These primitives make no assumption as to the basic types of the parser input or result types
- 
+
     ///Custom bind operator >>! binds parser p to result v, ignoring the return value of p
     let (>>!) p v = p >>= (fun _ -> result v)
     
@@ -21,9 +21,6 @@ module Primitives =
     
     ///listify turns the result of parsing function p into a single item list
     let listify p = p >>= (fun x -> result [x])
-        
-    ///filter checks the value returned from item against the predicate function f
-    let filter p f = p >>= (fun x -> if f x then result x else zero)
     
     ///repeat looks for zero or more instances of the parsing function p
     let rec repeat p = (repeat1 p) +++ (result [])

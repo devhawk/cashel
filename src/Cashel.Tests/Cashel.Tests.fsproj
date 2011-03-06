@@ -41,10 +41,11 @@
   </PropertyGroup>
   <Import Project="..\..\lib\FSharp\Microsoft.FSharp.Targets" />
   <ItemGroup>
-    <Compile Include="parser_test.fs" />
-    <Compile Include="primitives_test.fs" />
-    <Compile Include="peg_test.fs" />
-    <Compile Include="peg2_test.fs" />
+    <Compile Include="ParserTest.fs" />
+    <Compile Include="ListPrimitivesTest.fs" />
+    <Compile Include="ArraySegmentPrimitivesTest.fs" />
+    <Compile Include="PegTest.fs" />
+    <Compile Include="Peg2Test.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
