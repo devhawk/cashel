@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="parser.fs" />
     <Compile Include="primitives.fs" />
+    <Compile Include="ListPrimitives.fs" />
+    <Compile Include="CharListPrimitives.fs" />
   </ItemGroup>
   <Import Project="..\..\lib\FSharp\Microsoft.FSharp.Targets" />
 </Project>

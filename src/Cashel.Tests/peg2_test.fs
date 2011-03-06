@@ -48,7 +48,8 @@ PEG2
 open NUnit.Framework
 open FsUnit
 
-open DevHawk.Parser.Peg2
+open Cashel
+open Cashel.Peg2
     
 let (>|>) act exp = 
     match exp with

@@ -40,7 +40,7 @@ EndOfFile <- !.
 *)
 
 
-namespace DevHawk.Parser
+namespace Cashel
 
 module Peg =
     
@@ -142,8 +142,8 @@ module Peg =
     
     //---------------------------------------------------------------------------------------------
     
-    open DevHawk.Parser.Core
-    open DevHawk.Parser.Primitives
+    open Cashel
+    open Cashel.ListPrimitives
     
     ///EndOfFile  <- !. 
     let EndOfFile = eof
@@ -333,6 +333,3 @@ module Peg =
             
     ///Grammar    <- Spacing Definition+ EndOfFile
     let Grammar = Spacing >>. repeat1 Definition .>> EndOfFile
-          
-        
-    

@@ -3,7 +3,7 @@ module ParserTest
 open NUnit.Framework
 open FsUnit
 
-open DevHawk.Parser.Core
+open Cashel
 
 let (!!) str = List.ofSeq str
 let hello = !!"hello"

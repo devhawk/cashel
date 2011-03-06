@@ -1,6 +1,7 @@
-namespace DevHawk.Parser
+namespace Cashel
 
-module Core =
+[<AutoOpen>]
+module Parser =
               
     type Parser<'input, 'result> = 'input -> ('result * 'input) option
     

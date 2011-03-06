@@ -5,7 +5,7 @@ let (!!) str = List.ofSeq str
 open NUnit.Framework
 open FsUnit
 
-open DevHawk.Parser.Primitives
+open Cashel
 
 [<Test>]
 let test_item () =
@@ -40,6 +40,9 @@ let test_satisy_simple_predicate () =
 let test_satisy_failure_predicate () =
     satisfy item (fun x -> x = 'e') !!"test" |> should equal None
     
+
+open Cashel.ListPrimitives
+
 [<Test>]
 let test_anyOf_success_predicate () =
     anyOf ['q'..'v'] !!"test" |> should equal (Some('t', !!"est"))
@@ -174,6 +177,9 @@ let test_skipItems () =
 let test_skipItems_fail () =
     skipItems !!"ts" !!"test" |> should equal None
     
+
+open Cashel.CharListPrimitives
+
 [<Test>]
 let test_space () =
     let exp = Some (' ', !!" test")

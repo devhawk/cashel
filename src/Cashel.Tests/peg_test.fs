@@ -6,7 +6,8 @@ let chr (c:int) = System.Convert.ToChar(c)
 open NUnit.Framework
 open FsUnit
 
-open DevHawk.Parser.Peg
+open Cashel
+open Cashel.Peg
 
 [<Test>]
 let test_EndOfFile_with_empty_string () = 
@@ -203,51 +204,51 @@ let test_Range_single_fail () =
     
 [<Test>]
 let test_Class_single () =
-    DevHawk.Parser.Peg.Class !! "[a]test" |> should equal (Some([Single('a')], !!"test"))
+    Cashel.Peg.Class !! "[a]test" |> should equal (Some([Single('a')], !!"test"))
 
 [<Test>]
 let test_Class_single_spacing () =
-    DevHawk.Parser.Peg.Class !! "[a]\t\ttest" |> should equal (Some([Single('a')], !!"test"))
+    Cashel.Peg.Class !! "[a]\t\ttest" |> should equal (Some([Single('a')], !!"test"))
     
 [<Test>]
 let test_Class_single_range () =
-    DevHawk.Parser.Peg.Class !! "[a-z]test" |> should equal (Some([Dual('a', 'z')], !!"test"))
+    Cashel.Peg.Class !! "[a-z]test" |> should equal (Some([Dual('a', 'z')], !!"test"))
     
 [<Test>]
 let test_Class_multiple () =
-    DevHawk.Parser.Peg.Class !! "[ab-z]test" |> should equal (Some([Single('a');Dual('b','z')], !!"test"))
+    Cashel.Peg.Class !! "[ab-z]test" |> should equal (Some([Single('a');Dual('b','z')], !!"test"))
 
 [<Test>]
 let test_Class_failure_no_end_bracket () =
-    DevHawk.Parser.Peg.Class !! "[ab-ztest" |> should equal None
+    Cashel.Peg.Class !! "[ab-ztest" |> should equal None
     
 [<Test>]
 let test_Class_failure () =
-    DevHawk.Parser.Peg.Class !! "ab-z]test" |> should equal None
+    Cashel.Peg.Class !! "ab-z]test" |> should equal None
 
 [<Test>]
 let test_Literal_single_quote () =
-    DevHawk.Parser.Peg.Literal !! "'test'  me" |> should equal (Some(!!"test", !!"me"))
+    Cashel.Peg.Literal !! "'test'  me" |> should equal (Some(!!"test", !!"me"))
 
 [<Test>]
 let test_Literal_double_quote () =
-    DevHawk.Parser.Peg.Literal !! "\"test\"  me" |> should equal (Some(!!"test", !!"me"))
+    Cashel.Peg.Literal !! "\"test\"  me" |> should equal (Some(!!"test", !!"me"))
 
 [<Test>]
 let test_Literal_no_end_quote () =
-    DevHawk.Parser.Peg.Literal !! "\"test  me" |> should equal None
+    Cashel.Peg.Literal !! "\"test  me" |> should equal None
 
 [<Test>]
 let test_Identifier () =
-    DevHawk.Parser.Peg.Identifier !! "tE_s9t me" |> should equal (Some(!!"tE_s9t", !!"me"))
+    Cashel.Peg.Identifier !! "tE_s9t me" |> should equal (Some(!!"tE_s9t", !!"me"))
 
 [<Test>]
 let test_Identifier_start_with_underscore () =
-    DevHawk.Parser.Peg.Identifier !! "_9test me" |> should equal (Some(!!"_9test", !!"me"))
+    Cashel.Peg.Identifier !! "_9test me" |> should equal (Some(!!"_9test", !!"me"))
 
 [<Test>]
 let test_Identifier_fail_start_with_number () =
-    DevHawk.Parser.Peg.Identifier !! "9test me" |> should equal None
+    Cashel.Peg.Identifier !! "9test me" |> should equal None
     
 [<Test>]
 let test_Primary_Identifier () =

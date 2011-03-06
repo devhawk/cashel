@@ -52,7 +52,8 @@ EndOfFile <- !.
 *)
 
 
-namespace DevHawk.Parser
+namespace Cashel
+
 module Peg2 =
     
     //---------------------------------------------------------------------------------------------
@@ -192,8 +193,8 @@ module Peg2 =
         
     //---------------------------------------------------------------------------------------------
     
-    open DevHawk.Parser.Core
-    open DevHawk.Parser.Primitives
+    open Cashel
+    open Cashel.ListPrimitives
             
     let _EndOfFile = !~ item
     
