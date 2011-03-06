@@ -79,8 +79,8 @@ Target? GenerateDocumentation <-
         |> Scan
         |> Docu (fun p ->
             {p with
-               ToolPath = "./tools/FAKE/docu.exe"
-               TemplatesPath = "./tools/FAKE/templates"
+               ToolPath = "./lib/FAKE/docu.exe"
+               TemplatesPath = "./lib/FAKE/templates"
                OutputPath = docsDir })
 
 Target? CopyLicense <-
