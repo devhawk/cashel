@@ -117,6 +117,22 @@ let test_repeat1_no_matches () =
     repeat1 (matchToken 'e'B) !!!ttttest ===> None
     
 [<Test>]
+let test_repeat1While () =
+    repeat1While (fun xs -> xs.Length < 4) (matchToken 't'B) !!!ttttest ===> (Some(!!"tttt"B, !!+ttttest 4))
+    
+[<Test>]
+let test_repeat1While_one_match() =
+    repeat1While (fun xs -> xs.Length < 4) (matchToken 't'B) !!!test ===> (Some(['t'B], !!+test 1))
+
+[<Test>]
+let test_repeat1While_no_matches () =
+    repeat1While (fun xs -> xs.Length < 4) (matchToken 'e'B) !!!ttttest ===> None
+
+[<Test>]
+let test_repeat1While_too_many_matches() =
+    repeat1While (fun xs -> xs.Length < 3) (matchToken 't'B) !!!ttttest ===> None
+
+[<Test>]
 let test_failure_predicate_parser_success() =
     !~ (matchToken 't'B) !!!test ===> None
 
