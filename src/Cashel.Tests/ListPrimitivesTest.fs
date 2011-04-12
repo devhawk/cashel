@@ -191,9 +191,6 @@ let test_skips () =
 let test_skips_fail () =
     skips !!"ts" !!"test" |> should equal None
     
-
-open Cashel.CharListPrimitives
-
 [<Test>]
 let test_space () =
     let exp = Some (' ', !!" test")

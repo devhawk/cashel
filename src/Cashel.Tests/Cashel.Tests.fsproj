@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="ParserTest.fs" />
     <Compile Include="ListPrimitivesTest.fs" />
-    <Compile Include="ArraySegmentPrimitivesTest.fs" />
     <Compile Include="PegTest.fs" />
     <Compile Include="Peg2Test.fs" />
     <None Include="packages.config" />
