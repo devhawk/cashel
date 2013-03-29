@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C7DDCE
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Sample.Peg", "src\Cashel.Sample.Peg\Cashel.Sample.Peg.fsproj", "{AC2934E2-76EF-4A3F-9DF1-A590305344E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC2934E2-76EF-4A3F-9DF1-A590305344E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC2934E2-76EF-4A3F-9DF1-A590305344E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC2934E2-76EF-4A3F-9DF1-A590305344E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC2934E2-76EF-4A3F-9DF1-A590305344E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
