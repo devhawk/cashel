@@ -1,17 +1,20 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel", "src\Cashel\Cashel.fsproj", "{6B89DD99-F2D4-4C0B-9A9A-12AE0028EDD1}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Tests", "src\Cashel.Tests\Cashel.Tests.fsproj", "{25D2AF80-078E-46A1-8EBB-01A905DBAD48}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Peg", "src\Cashel.Peg\Cashel.Peg.fsproj", "{ADA1F74D-B036-4756-967C-5E46199732C4}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{9FE07BDE-05E7-415A-8D64-04B72E573640}"
 	ProjectSection(SolutionItems) = preProject
-		build.bat = build.bat
-		build.fsx = build.fsx
 		Cashel.nuspec = Cashel.nuspec
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel", "src\Cashel\Cashel.fsproj", "{BB0F7308-C60A-471A-84ED-A76F64469028}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Tests", "src\Cashel.Tests\Cashel.Tests.fsproj", "{278DA219-5263-4B10-87CB-5CD4F5F8A50C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C7DDCECD-5F2C-46F3-8749-A9E5E17A8538}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
 Global
@@ -20,18 +23,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6B89DD99-F2D4-4C0B-9A9A-12AE0028EDD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B89DD99-F2D4-4C0B-9A9A-12AE0028EDD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B89DD99-F2D4-4C0B-9A9A-12AE0028EDD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B89DD99-F2D4-4C0B-9A9A-12AE0028EDD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25D2AF80-078E-46A1-8EBB-01A905DBAD48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25D2AF80-078E-46A1-8EBB-01A905DBAD48}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25D2AF80-078E-46A1-8EBB-01A905DBAD48}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25D2AF80-078E-46A1-8EBB-01A905DBAD48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADA1F74D-B036-4756-967C-5E46199732C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADA1F74D-B036-4756-967C-5E46199732C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADA1F74D-B036-4756-967C-5E46199732C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADA1F74D-B036-4756-967C-5E46199732C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB0F7308-C60A-471A-84ED-A76F64469028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB0F7308-C60A-471A-84ED-A76F64469028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB0F7308-C60A-471A-84ED-A76F64469028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB0F7308-C60A-471A-84ED-A76F64469028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{278DA219-5263-4B10-87CB-5CD4F5F8A50C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
