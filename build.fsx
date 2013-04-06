@@ -1,6 +1,6 @@
-#I "lib/FAKE"
-#r "FakeLib.dll"
+#r "tools/FAKE/tools/FakeLib.dll"
 open Fake 
+open Fake.AssemblyInfoFile
 open Fake.MSBuild
 
 (* properties *)
@@ -14,117 +14,113 @@ let homepage = "https://github.com/panesofglass/cashel"
 
 (* Directories *)
 let buildDir = "./build/"
-let docsDir = "./docs/" 
 let deployDir = "./deploy/"
 let testDir = "./test/"
-let nugetDir = "./nuget/" 
+let nugetDir = "./nuget/"
+let nugetLibDir = nugetDir @@ "lib"
 
 (* Tools *)
-let nunitPath = "./packages/NUnit.2.5.9.10348/Tools"
-let nunitOutput = testDir + "TestResults.xml"
-let zipFileName = deployDir + sprintf "%s-%s.zip" projectName version
+let nugetPath = ".nuget/NuGet.exe"
+let nunitPath = "tools/NUnit.Runners/tools"
+
+(* params *)
+let target = getBuildParamOrDefault "target" "Default"
 
 (* files *)
 let appReferences =
-    !+ @"src\**\*.csproj" 
-      ++ @"src\**\*.fsproj"
-      -- "**\*_Spliced*" 
+    !+ @"src/Cashel/*.fsproj"
+        |> Scan
+
+let testReferences =
+    !+ @"src/**/*.fsproj"
         |> Scan
 
 let filesToZip =
-  !+ (buildDir + "/**/*.*")     
-      -- "*.zip"
-      |> Scan      
+    !+ (buildDir + "/**/*.*")
+        -- "*.zip"
+        |> Scan
 
 (* Targets *)
-Target? Clean <-
-    fun _ -> CleanDirs [buildDir; testDir; deployDir; docsDir]
+Target "Clean" (fun _ ->
+    CleanDirs [buildDir; testDir; deployDir; nugetDir; nugetLibDir]
+)
 
-Target? BuildApp <-
-    fun _ -> 
-        if not isLocalBuild then
-          AssemblyInfo 
-           (fun p -> 
-              {p with
-                 CodeLanguage = FSharp;
-                 AssemblyVersion = buildVersion;
-                 AssemblyTitle = projectName;
-                 AssemblyDescription = projectDescription;
-                 Guid = "1e95a279-c2a9-498b-bc72-6e7a0d6854ce";
-                 OutputFileName = "./src/AssemblyInfo.fs"})
+Target "BuildApp" (fun _ -> 
+    if not isLocalBuild then
+        [ Attribute.Version(buildVersion)
+          Attribute.Title(projectName)
+          Attribute.Description(projectDescription)
+          Attribute.Guid("bb0f7308-c60a-471a-84ed-a76f64469028")
+        ]
+        |> CreateFSharpAssemblyInfo "src/AssemblyInfo.fs"
 
-        appReferences
-          |> MSBuildRelease buildDir "Build"
-          |> Log "AppBuild-Output: "
+    MSBuildRelease buildDir "Build" appReferences
+        |> Log "AppBuild-Output: "
+)
 
-Target? BuildTest <-
-    fun _ -> 
-        appReferences
-          |> MSBuildDebug testDir "Build"
-          |> Log "TestBuild-Output: "
+Target "BuildTest" (fun _ -> 
+    MSBuildDebug testDir "Build" testReferences
+        |> Log "TestBuild-Output: "
+)
 
-Target? Test <-
-    fun _ ->
-        !+ (testDir + "/*.dll")
-          |> Scan
-          |> NUnit (fun p -> 
-                      {p with 
-                         ToolPath = nunitPath; 
-                         DisableShadowCopy = true; 
-                         OutputFile = nunitOutput}) 
+Target "Test" (fun _ ->
+    let nunitOutput = testDir + "TestResults.xml"
+    !+ (testDir + "Cashel.*.dll")
+      |> Scan
+      |> NUnit (fun p -> 
+                  {p with 
+                     ToolPath = nunitPath
+                     DisableShadowCopy = true
+                     OutputFile = nunitOutput})
+)
 
-Target? GenerateDocumentation <-
-    fun _ ->
-      !+ (buildDir + "Cashel.dll")      
-        |> Scan
-        |> Docu (fun p ->
-            {p with
-               ToolPath = "./lib/FAKE/docu.exe"
-               TemplatesPath = "./lib/FAKE/templates"
-               OutputPath = docsDir })
+Target "CopyLicense" (fun _ ->
+    [ "LICENSE.txt" ] |> CopyTo buildDir
+)
 
-Target? CopyLicense <-
-    fun _ ->
-        [ "LICENSE.txt" ] |> CopyTo buildDir
+Target "BuildZip" (fun _ ->
+    let zipFileName = deployDir + sprintf "%s-%s.zip" projectName version
+    Zip buildDir zipFileName filesToZip
+)
 
-Target? BuildZip <-
-    fun _ -> Zip buildDir zipFileName filesToZip
+Target "CreateNuGet" (fun _ ->
+    let nugetLibDir = nugetDir @@ "lib"
+    XCopy (buildDir.TrimEnd('/')) nugetLibDir
+    NuGet (fun p ->
+        {p with
+            Authors = authors
+            Project = projectName
+            Description = projectDescription
+            Version = version
+            OutputPath = nugetDir
+            ToolPath = nugetPath
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" })
+        "Cashel.nuspec"
 
-Target? ZipDocumentation <-
-    fun _ ->    
-        let docFiles = 
-          !+ (docsDir + "/**/*.*")
-            |> Scan
-        let zipFileName = deployDir + sprintf "Documentation-%s.zip" version
-        Zip docsDir zipFileName docFiles
+    !! (nugetDir + sprintf "Cashel.%s.nupkg" version)
+        |> CopyTo deployDir
+)
 
-Target? CreateNuGet <-
-    fun _ ->
-        let nugetDocsDir = nugetDir @@ "docs/"
-        let nugetToolsDir = nugetDir @@ "tools/"
-        
-        XCopy docsDir nugetDocsDir
-        XCopy buildDir nugetToolsDir
-        
-        NuGet (fun p ->
-            {p with
-                Authors = authors
-                Project = projectName
-                Description = projectDescription
-                OutputPath = nugetDir }) "Cashel.nuspec"
+FinalTarget "CloseTestRunner" (fun _ ->
+    ProcessHelper.killProcess "nunit-agent.exe"
+)
 
-Target? Default <- DoNothing
-Target? Deploy <- DoNothing
+Target "Deploy" DoNothing
+Target "Default" DoNothing
 
 // Dependencies
-For? BuildApp <- Dependency? Clean
-For? Test <- Dependency? BuildApp |> And? BuildTest
-For? GenerateDocumentation <- Dependency? BuildApp
-For? ZipDocumentation <- Dependency? GenerateDocumentation
-For? BuildZip <- Dependency? BuildApp |> And? CopyLicense
-For? CreateNuGet <- Dependency? Test |> And? BuildZip |> And? ZipDocumentation
-For? Deploy <- Dependency? Test |> And? BuildZip |> And? ZipDocumentation
-For? Default <- Dependency? Deploy
+"Clean"
+    ==> "BuildApp"
+    ==> "BuildTest"
+    ==> "Test"
+    ==> "CopyLicense"
+    ==> "BuildZip"
+    ==> "CreateNuGet"
+    ==> "Deploy"
+
+"Default" <== ["Deploy"]
 
 // start build
-Run? Default
+Run target
+
