@@ -1,4 +1,7 @@
 @echo off
 cls
-"lib\FAKE\Fake.exe" "build.fsx"
+".nuget/nuget.exe" "install" "FAKE" "-OutputDirectory" "tools" "-ExcludeVersion" "-Prerelease"
+".nuget/nuget.exe" "install" "NUnit.Runners" "-OutputDirectory" "tools" "-ExcludeVersion"
+"tools/FAKE/tools/Fake.exe" "build.fsx" %*
 pause
+
