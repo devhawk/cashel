@@ -15,7 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C7DDCE
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
-		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Cashel.Sample.Peg", "src\Cashel.Sample.Peg\Cashel.Sample.Peg.fsproj", "{AC2934E2-76EF-4A3F-9DF1-A590305344E5}"
