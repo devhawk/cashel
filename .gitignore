@@ -30,7 +30,9 @@ _ReSharper*/
 build/
 deploy/
 docs/
-tools/FAKE/templates/
+tools/
 test/
 *_Spliced.*
 packages/
+nuget/
+
