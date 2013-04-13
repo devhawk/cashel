@@ -1,4 +1,21 @@
-#r "tools/FAKE/tools/FakeLib.dll"
+#if BOOT
+open Fake
+module FB = Fake.Boot
+FB.Prepare {
+    FB.Config.Default __SOURCE_DIRECTORY__ with
+        NuGetDependencies =
+            let (!!) x = FB.NuGetDependency.Create x
+            [
+                !!"FAKE"
+                !!"NuGet.Build"
+                !!"NuGet.Core"
+                !!"NUnit.Runners"
+            ]
+}
+#endif
+
+#load ".build/boot.fsx"
+
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.MSBuild
@@ -21,10 +38,7 @@ let nugetLibDir = nugetDir @@ "lib"
 
 (* Tools *)
 let nugetPath = ".nuget/NuGet.exe"
-let nunitPath = "tools/NUnit.Runners/tools"
-
-(* params *)
-let target = getBuildParamOrDefault "target" "Default"
+let nunitPath = "packages/NUnit.Runners.2.6.2/tools"
 
 (* files *)
 let appReferences =
@@ -122,5 +136,5 @@ Target "Default" DoNothing
 "Default" <== ["Deploy"]
 
 // start build
-Run target
+RunTargetOrDefault "Default"
 

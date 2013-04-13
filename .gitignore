@@ -6,6 +6,7 @@ Thumbs.db
 *.exe
 *.pdb
 *.user
+*.un~
 *.aps
 *.pch
 *.vspscc
@@ -27,7 +28,7 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-build/
+*build/
 deploy/
 docs/
 tools/
